@@ -6,8 +6,7 @@
 
 using std::string;
 
-std::vector<std::unique_ptr<string>> Duplicate(
-    const std::vector<std::shared_ptr<string>>& items) {
+std::vector<std::unique_ptr<string>> Duplicate(const std::vector<std::shared_ptr<string>>& items) {
     std::vector<std::unique_ptr<string>> out(items.size());
     for (size_t i = 0; i < items.size(); i++) {
         out[i] = std::make_unique<string>(*items[i]);
