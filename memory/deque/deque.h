@@ -165,6 +165,8 @@ public:
         if (begin_.second == 0) {
             begin_.second = kBlockSize - 1;
             --begin_.first;
+        } else {
+            --begin_.second;
         }
         buffer_[begin_.first][begin_.second] = value;
     }
@@ -173,6 +175,8 @@ public:
         if (end_.second == 0) {
             end_.second = kBlockSize - 1;
             --end_.first;
+        } else {
+            --end_.second;
         }
         buffer_[end_.first][end_.second] = int();
     }
