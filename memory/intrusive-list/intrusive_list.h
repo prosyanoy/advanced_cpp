@@ -4,7 +4,8 @@
 
 class ListHook {
 public:
-    ListHook() : left_(nullptr), right_(nullptr) {}
+    ListHook() : left_(nullptr), right_(nullptr) {
+    }
     bool IsLinked() const {
         return left_ && right_;
     }
@@ -58,8 +59,10 @@ class List {
 public:
     class Iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
         ListHook* element_;
+
     public:
-        Iterator(ListHook* element = nullptr) : element_(element) {}
+        Iterator(ListHook* element = nullptr) : element_(element) {
+        }
 
         Iterator& operator++() {
             element_ = element_->right_;
@@ -87,7 +90,8 @@ public:
         }
     };
 
-    List() : dummy_(ListHook()) {}
+    List() : dummy_(ListHook()) {
+    }
     List(const List&) = delete;
     List(List&& other) {
         dummy_ = other.dummy_;
@@ -137,7 +141,6 @@ public:
     // and never copies or moves T
     void PushBack(ListHook* elem) {
         elem->LinkBefore(&dummy_);
-
     }
     void PushFront(ListHook* elem) {
         if (dummy_.right_) {
