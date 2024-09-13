@@ -1,6 +1,7 @@
 #include "lru_cache.h"
 
-LruCache::LruCache(size_t max_size) : size_(max_size) {}
+LruCache::LruCache(size_t max_size) : size_(max_size) {
+}
 
 void LruCache::Set(const std::string& key, const std::string& value) {
     auto it = iters_map_.find(key);

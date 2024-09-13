@@ -15,5 +15,6 @@ public:
 private:
     size_t size_;
     std::list<std::pair<std::string, std::string>> values_list_;
-    std::unordered_map<std::string, std::list<std::pair<std::string, std::string>>::iterator> iters_map_;
+    std::unordered_map<std::string, std::list<std::pair<std::string, std::string>>::iterator>
+        iters_map_;
 };
