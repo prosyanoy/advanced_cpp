@@ -5,8 +5,8 @@
 #include <algorithm>
 
 class StringView {
-const char* sv;
-size_t sv_size;
+    const char* sv;
+    size_t sv_size;
 
 public:
     StringView(const std::string& s, size_t pos = 0, size_t size = std::string::npos) {
