@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include <stddef.h>
 
 using std::string;
 
