@@ -5,7 +5,7 @@
 #include <vector>
 
 struct State {
-    int ref_count; // сколько векторов делят этот State между собой.
+    int ref_count;
     std::vector<std::string> v;
     bool deep_copy;
 };
