@@ -4,6 +4,9 @@ void COWVector::CleanState() {
         delete state_;
     } else {
         --state_->ref_count;
+        if (!state_->ref_count) {
+            delete state_;
+        }
     }
 }
 COWVector::COWVector() : state_(new State{0, {}, false}) {
