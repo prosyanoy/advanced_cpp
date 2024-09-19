@@ -19,8 +19,8 @@ public:
     COWVector(const COWVector& other);
     COWVector& operator=(const COWVector& other);
 
-    COWVector(COWVector&& other);
-    COWVector& operator=(COWVector&&);
+    COWVector(COWVector&& other) noexcept;
+    COWVector& operator=(COWVector&&) noexcept;
 
     size_t Size() const;
 
