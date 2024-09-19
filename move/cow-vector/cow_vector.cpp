@@ -1,17 +1,14 @@
 #include "cow_vector.h"
 void COWVector::CleanState() {
-    if (state_) {
-        if (!(state_->ref_count)) {
-            delete state_;
-            state_ = nullptr;
-        } else {
-            --state_->ref_count;
-            if (!state_->ref_count) {
-                delete state_;
-                state_ = nullptr;
-            }
-        }
+    if (state_->ref_count == 0) {
+        delete state_;
+        return;
+    } else if (state_->ref_count == 1) {
+        --state_->ref_count;
+        delete state_;
+        return;
     }
+    --state_->ref_count;
 }
 COWVector::COWVector() : state_(new State{0, {}, false}) {
 }
