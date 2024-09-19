@@ -1,7 +1,7 @@
 #include "cow_vector.h"
 void COWVector::CleanState() {
     if (state_) {
-        if (!state_->ref_count) {
+        if (!(state_->ref_count)) {
             delete state_;
             state_ = nullptr;
         } else {
@@ -66,10 +66,10 @@ void COWVector::PushBack(const std::string& value) {
     } else {
         State* temp = new State{*state_};
         CleanState();
+        temp->deep_copy = true;
+        temp->ref_count = 1;
+        temp->v.push_back(value);
         state_ = temp;
-        state_->deep_copy = true;
-        state_->ref_count = 1;
-        state_->v.push_back(value);
     }
 }
 
@@ -79,9 +79,9 @@ void COWVector::Set(size_t at, const std::string& value) {
     } else {
         State* temp = new State{*state_};
         CleanState();
+        temp->deep_copy = true;
+        temp->ref_count = 1;
+        temp->v[at] = value;
         state_ = temp;
-        state_->deep_copy = true;
-        state_->ref_count = 1;
-        state_->v[at] = value;
     }
 }
