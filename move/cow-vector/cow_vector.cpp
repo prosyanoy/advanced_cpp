@@ -1,27 +1,26 @@
 #include "cow_vector.h"
 void COWVector::CleanState() {
-    if (!state_->ref_count) {
+    if (state_ && state_->release_ref()) {
         delete state_;
-    } else {
-        --state_->ref_count;
     }
+}
 
+COWVector::COWVector() : state_(new State{1, {}, false}) {
 }
-COWVector::COWVector() : state_(new State{0, {}, false}) {
-}
+
 COWVector::~COWVector() {
     CleanState();
 }
 
 COWVector::COWVector(const COWVector& other) {
     state_ = other.state_;
-    ++(state_->ref_count);
+    state_->add_ref();
 }
 COWVector& COWVector::operator=(const COWVector& other) {
     if (this != &other) {
         CleanState();
         state_ = other.state_;
-        ++(state_->ref_count);
+        state_->add_ref();
     }
     return *this;
 }

@@ -8,11 +8,18 @@ struct State {
     int ref_count;
     std::vector<std::string> v;
     bool deep_copy;
+
+    void add_ref() {
+        ++ref_count;
+    }
+
+    bool release_ref() {
+        return --ref_count == 0;
+    }
 };
 
 class COWVector {
 public:
-    void CleanState();
     COWVector();
     ~COWVector();
 
@@ -34,5 +41,6 @@ public:
     void Set(size_t at, const std::string& value);
 
 private:
+    void CleanState();
     State* state_;
 };
