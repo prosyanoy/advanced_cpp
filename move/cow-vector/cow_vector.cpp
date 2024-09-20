@@ -1,6 +1,6 @@
 #include "cow_vector.h"
 void COWVector::CleanState() {
-    if (state_ && state_->release_ref()) {
+    if (state_ && state_->ReleaseRef()) {
         delete state_;
     }
 }
@@ -14,13 +14,13 @@ COWVector::~COWVector() {
 
 COWVector::COWVector(const COWVector& other) {
     state_ = other.state_;
-    state_->add_ref();
+    state_->AddRef();
 }
 COWVector& COWVector::operator=(const COWVector& other) {
     if (this != &other) {
         CleanState();
         state_ = other.state_;
-        state_->add_ref();
+        state_->AddRef();
     }
     return *this;
 }

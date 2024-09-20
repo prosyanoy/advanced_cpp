@@ -9,11 +9,11 @@ struct State {
     std::vector<std::string> v;
     bool deep_copy;
 
-    void add_ref() {
+    void AddRef() {
         ++ref_count;
     }
 
-    bool release_ref() {
+    bool ReleaseRef() {
         return --ref_count == 0;
     }
 };
