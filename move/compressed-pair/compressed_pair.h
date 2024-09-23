@@ -4,7 +4,7 @@
 #include <utility>
 
 template <typename T>
-constexpr bool is_final_v = __is_final(T);
+constexpr bool kIsFinalV = __is_final(T);
 
 template <typename T1, typename T2>
 struct FancyPairT1T2 : T1, T2 {
@@ -197,11 +197,11 @@ struct NormalPair {
 template <typename T1, typename T2>
 using CompressedPair = typename std::conditional_t<
     std::is_empty_v<T1> && std::is_empty_v<T2> && std::is_class<T1>::value &&
-        std::is_class<T2>::value && !is_final_v<T1> && !is_final_v<T2> &&
+        std::is_class<T2>::value && !kIsFinalV<T1> && !kIsFinalV<T2> &&
         !std::is_base_of_v<T1, T2> && !std::is_base_of_v<T2, T1>,
     FancyPairT1T2<T1, T2>,
     typename std::conditional_t<
-        std::is_empty_v<T1> && std::is_class<T1>::value && !is_final_v<T1>, FancyPairT1<T1, T2>,
+        std::is_empty_v<T1> && std::is_class<T1>::value && !kIsFinalV<T1>, FancyPairT1<T1, T2>,
         typename std::conditional_t<std::is_empty_v<T2> && std::is_class<T2>::value &&
-                                        !is_final_v<T2>,
+                                        !kIsFinalV<T2>,
                                     FancyPairT2<T1, T2>, NormalPair<T1, T2> > > >;
