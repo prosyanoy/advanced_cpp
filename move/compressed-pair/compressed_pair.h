@@ -51,7 +51,6 @@ struct FancyPairT1T2 : T1, T2 {
     }
 };
 
-
 // Оптимизированная пара, наследующаяся от T1
 template <typename T1, typename T2>
 struct FancyPairT1 : T1 {
