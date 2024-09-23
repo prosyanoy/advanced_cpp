@@ -8,9 +8,7 @@
 
 class OneTimeCallback {
 public:
-    virtual ~OneTimeCallback() {
-        delete this;
-    }
+    virtual ~OneTimeCallback() = 0;
     virtual std::string operator()() const&& = 0;
 };
 
@@ -20,6 +18,9 @@ class AwesomeCallback : public OneTimeCallback {
 
 public:
     AwesomeCallback(std::string text) : text_(text) {
+    }
+    ~AwesomeCallback() {
+        delete this;
     }
     std::string operator()() const&& override {
         return std::move(text_) + "awesomeness";
