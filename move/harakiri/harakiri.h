@@ -8,7 +8,9 @@
 
 class OneTimeCallback {
 public:
-    virtual ~OneTimeCallback() = default;
+    virtual ~OneTimeCallback() {
+        delete this;
+    }
     virtual std::string operator()() const&& = 0;
 };
 
