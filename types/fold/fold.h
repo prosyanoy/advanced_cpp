@@ -16,7 +16,7 @@ struct Prod {
 };
 
 struct Concat {
-    std::vector<int>& operator()(std::vector<int> a, std::vector<int> b) {
+    std::vector<int> operator()(std::vector<int> a, std::vector<int> b) {
         a.insert(a.end(), b.begin(), b.end());
         return a;
     }
@@ -32,10 +32,11 @@ T Fold(Iterator first, Iterator last, T init, BinaryOp func) {
 
 class Length {
     int* length_;
+
 public:
     Length(int* cnt) : length_(cnt) {
     }
-    template<class... Args>
+    template <class... Args>
     int operator()(Args&&... _) {
         return ++(*length_);
     }
