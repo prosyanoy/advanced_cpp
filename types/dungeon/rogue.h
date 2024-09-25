@@ -4,6 +4,7 @@
 
 #include <stdexcept>
 #include <unordered_set>
+#include <queue>
 
 Room* FindFinalRoom(Room* starting_room) {
     std::vector<std::string> keys;
