@@ -5,7 +5,8 @@
 template <class Functor>
 class ReverseBinaryFunctor {
 public:
-    explicit ReverseBinaryFunctor(Functor functor) : functor_(functor) {}
+    explicit ReverseBinaryFunctor(Functor functor) : functor_(functor) {
+    }
 
     template <typename T>
     bool operator()(const T& a, const T& b) const {
@@ -19,7 +20,8 @@ private:
 template <class Functor>
 class ReverseUnaryFunctor {
 public:
-    explicit ReverseUnaryFunctor(Functor functor) : functor_(functor) {}
+    explicit ReverseUnaryFunctor(Functor functor) : functor_(functor) {
+    }
 
     template <typename T>
     bool operator()(const T& a) const {
