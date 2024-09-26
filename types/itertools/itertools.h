@@ -1,5 +1,8 @@
 #pragma once
 
+#include <utility>
+#include <cstdint>
+
 template <class Iterator>
 class IteratorRange {
 public:
