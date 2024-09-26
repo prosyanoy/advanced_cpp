@@ -74,7 +74,7 @@ struct RangeIt {
         return curr_;
     }
 
-    friend bool operator!= (const RangeIt& a, const RangeIt& b) {
+    friend bool operator!=(const RangeIt& a, const RangeIt& b) {
         if (a.step_ > 0) {
             return a.curr_ < b.curr_;
         } else {
@@ -102,7 +102,7 @@ struct ZipIt {
         return std::make_pair(*first_it_, *second_it_);
     }
 
-    friend bool operator!= (const ZipIt& a, const ZipIt& b) {
+    friend bool operator!=(const ZipIt& a, const ZipIt& b) {
         return (a.first_it_ != b.first_it_) && (a.second_it_ != b.second_it_);
     }
 
@@ -133,7 +133,7 @@ struct GroupIt {
         return {curr_, it};
     }
 
-    friend bool operator!= (const GroupIt& a, const GroupIt& b) {
+    friend bool operator!=(const GroupIt& a, const GroupIt& b) {
         return a.curr_ != b.curr_;
     }
 
@@ -159,12 +159,14 @@ auto Zip(const F& first, const S& second) {
     using FIt = decltype(first.begin());
     using SIt = decltype(second.begin());
     using Iterator = ZipIt<FIt, SIt>;
-    return IteratorZip<FIt, SIt, ZipIt>(Iterator(first.begin(), second.begin()), Iterator(first.end(), second.end()));
+    return IteratorZip<FIt, SIt, ZipIt>(Iterator(first.begin(), second.begin()),
+                                        Iterator(first.end(), second.end()));
 }
 
 template <typename T>
 auto Group(const T& data) {
     using TIt = decltype(data.begin());
     using Iterator = GroupIt<TIt>;
-    return IteratorGroup<TIt, GroupIt>(Iterator(data.begin(), data.end()), Iterator(data.end(), data.end()));
+    return IteratorGroup<TIt, GroupIt>(Iterator(data.begin(), data.end()),
+                                       Iterator(data.end(), data.end()));
 }
