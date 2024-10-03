@@ -8,16 +8,17 @@
 
 template <class T>
 struct Slug {
-
     Slug() = default;
 
     // Template copy constructor
     template <class U, std::enable_if_t<std::is_convertible_v<U*, T*>, int> = 0>
-    Slug(const Slug<U>&) noexcept {}
+    Slug(const Slug<U>&) noexcept {
+    }
 
     // Template move constructor
     template <class U, std::enable_if_t<std::is_convertible_v<U*, T*>, int> = 0>
-    Slug(Slug<U>&&) noexcept {}
+    Slug(Slug<U>&&) noexcept {
+    }
 
     // Template copy assignment operator
     template <class U, std::enable_if_t<std::is_convertible_v<U*, T*>, int> = 0>
@@ -38,32 +39,33 @@ struct Slug {
 
 template <class T>
 struct Slug<T[]> {
-
     Slug() = default;
 
     // Template copy constructor
-    template <class U, std::enable_if_t<std::is_convertible_v<U (*)[], T (*)[]>, int> = 0>
-    Slug(const Slug<U>&) noexcept {}
+    template <class U, std::enable_if_t<std::is_convertible_v<U(*)[], T(*)[]>, int> = 0>
+    Slug(const Slug<U>&) noexcept {
+    }
 
     // Template move constructor
-    template <class U, std::enable_if_t<std::is_convertible_v<U (*)[], T (*)[]>, int> = 0>
-    Slug(Slug<U>&&) noexcept {}
+    template <class U, std::enable_if_t<std::is_convertible_v<U(*)[], T(*)[]>, int> = 0>
+    Slug(Slug<U>&&) noexcept {
+    }
 
     // Template copy assignment operator
-    template <class U, std::enable_if_t<std::is_convertible_v<U (*)[], T (*)[]>, int> = 0>
+    template <class U, std::enable_if_t<std::is_convertible_v<U(*)[], T(*)[]>, int> = 0>
     Slug& operator=(const Slug<U>&) noexcept {
         return *this;
     }
 
     // Template move assignment operator
-    template <class U, std::enable_if_t<std::is_convertible_v<U (*)[], T (*)[]>, int> = 0>
+    template <class U, std::enable_if_t<std::is_convertible_v<U(*)[], T(*)[]>, int> = 0>
     Slug& operator=(Slug<U>&&) noexcept {
         return *this;
     }
 
     template <class U>
     void operator()(U* ptr) const noexcept {
-        static_assert(std::is_convertible<U (*)[], T (*)[]>::value,
+        static_assert(std::is_convertible<U(*)[], T(*)[]>::value,
                       "U(*)[] must be convertible to T(*)[]");
         delete[] ptr;
     }
@@ -74,6 +76,7 @@ struct Slug<T[]> {
 template <typename T, typename Deleter = Slug<T>>
 class UniquePtr {
     CompressedPair<T*, Deleter> data_;
+
 public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructors
@@ -85,20 +88,24 @@ public:
     UniquePtr(T* ptr, const Deleter& deleter) : data_(ptr, deleter) {
     }
 
-    template <class U,
-              class D,
-              class = std::enable_if_t<(std::is_base_of_v<T, U> || std::is_base_of_v<U, T> || std::is_same_v<T, U>) && !std::is_array<U>::value>,
-              class = std::enable_if_t< (std::is_reference<Deleter>::value && std::is_same<Deleter, D>::value) ||
+    template <class U, class D,
+              class = std::enable_if_t<(std::is_base_of_v<T, U> || std::is_base_of_v<U, T> ||
+                                        std::is_same_v<T, U>) &&
+                                       !std::is_array<U>::value>,
+              class = std::enable_if_t<
+                  (std::is_reference<Deleter>::value && std::is_same<Deleter, D>::value) ||
                   (!std::is_reference<Deleter>::value && std::is_convertible<D, Deleter>::value)>>
-    UniquePtr(UniquePtr<U, D>&& other) noexcept : data_(other.Release(), std::move(other.GetDeleter())) {
+    UniquePtr(UniquePtr<U, D>&& other) noexcept
+        : data_(other.Release(), std::move(other.GetDeleter())) {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // `operator=`-s
 
-    template <class U,
-              class D,
-              class = std::enable_if_t<(std::is_base_of_v<T, U> || std::is_base_of_v<U, T> || std::is_same_v<T, U>) && !std::is_array<U>::value>,
+    template <class U, class D,
+              class = std::enable_if_t<(std::is_base_of_v<T, U> || std::is_base_of_v<U, T> ||
+                                        std::is_same_v<T, U>) &&
+                                       !std::is_array<U>::value>,
               class = std::enable_if_t<std::is_assignable<Deleter&, D&&>::value>>
     UniquePtr& operator=(UniquePtr<U, D>&& other) noexcept {
         if (Get() != other.Get()) {
@@ -175,6 +182,7 @@ public:
 template <typename Deleter>
 class UniquePtr<void, Deleter> {
     CompressedPair<void*, Deleter> data_;
+
 public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructors
@@ -252,13 +260,13 @@ public:
     // Запрет копирования
     UniquePtr(const UniquePtr&) = delete;
     UniquePtr& operator=(const UniquePtr&) = delete;
-
 };
 
 // Specialization for arrays
 template <typename T, typename Deleter>
 class UniquePtr<T[], Deleter> {
     CompressedPair<T*, Deleter> data_;
+
 public:
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructors
@@ -272,21 +280,19 @@ public:
     }
 
     template <class U, class D,
-              class = std::enable_if_t<std::is_convertible<U(*)[], T(*)[]>::value>,
+              class = std::enable_if_t<std::is_convertible<U (*)[], T (*)[]>::value>,
               class = std::enable_if_t<
                   (std::is_reference<Deleter>::value && std::is_same<Deleter, D>::value) ||
-                  (!std::is_reference<Deleter>::value && std::is_constructible_v<Deleter, D&&>)
-                  >
-              >
-    UniquePtr(UniquePtr<U[], D>&& other) noexcept : data_(other.Release(), std::move(other.GetDeleter())) {
+                  (!std::is_reference<Deleter>::value && std::is_constructible_v<Deleter, D&&>)>>
+    UniquePtr(UniquePtr<U[], D>&& other) noexcept
+        : data_(other.Release(), std::move(other.GetDeleter())) {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // `operator=`-s
     template <class U, class D,
-              class = std::enable_if_t<std::is_convertible<U(*)[], T(*)[]>::value>,
-              class = std::enable_if_t<std::is_assignable_v<Deleter&, D&&>>
-              >
+              class = std::enable_if_t<std::is_convertible<U (*)[], T (*)[]>::value>,
+              class = std::enable_if_t<std::is_assignable_v<Deleter&, D&&>>>
     UniquePtr& operator=(UniquePtr<U[], D>&& other) noexcept {
         if (Get() != other.Get()) {
             Reset();
