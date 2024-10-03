@@ -371,7 +371,7 @@ public:
 // Объявляем специализацию std::swap для UniquePtr
 namespace std {
 template <typename T, typename D>
-void swap(UniquePtr<T, D>& lhs, UniquePtr<T, D>& rhs) noexcept {
+void Swap(UniquePtr<T, D>& lhs, UniquePtr<T, D>& rhs) noexcept {
     lhs.Swap(rhs);  // Вызов пользовательского метода swap
 }
 
