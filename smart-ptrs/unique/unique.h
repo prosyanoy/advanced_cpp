@@ -375,4 +375,4 @@ void swap(UniquePtr<T, D>& lhs, UniquePtr<T, D>& rhs) noexcept {
     lhs.Swap(rhs);  // Вызов пользовательского метода swap
 }
 
-}
+}  // namespace std
