@@ -42,23 +42,23 @@ struct Slug<T[]> {
     Slug() = default;
 
     // Template copy constructor
-    template <class U, std::enable_if_t<std::is_convertible_v<U(*)[], T(*)[]>, int> = 0>
+    template <class U, std::enable_if_t<std::is_convertible_v<U (*)[], T (*)[]>, int> = 0>
     Slug(const Slug<U>&) noexcept {
     }
 
     // Template move constructor
-    template <class U, std::enable_if_t<std::is_convertible_v<U(*)[], T(*)[]>, int> = 0>
+    template <class U, std::enable_if_t<std::is_convertible_v<U (*)[], T (*)[]>, int> = 0>
     Slug(Slug<U>&&) noexcept {
     }
 
     // Template copy assignment operator
-    template <class U, std::enable_if_t<std::is_convertible_v<U(*)[], T(*)[]>, int> = 0>
+    template <class U, std::enable_if_t<std::is_convertible_v<U (*)[], T (*)[]>, int> = 0>
     Slug& operator=(const Slug<U>&) noexcept {
         return *this;
     }
 
     // Template move assignment operator
-    template <class U, std::enable_if_t<std::is_convertible_v<U(*)[], T(*)[]>, int> = 0>
+    template <class U, std::enable_if_t<std::is_convertible_v<U (*)[], T (*)[]>, int> = 0>
     Slug& operator=(Slug<U>&&) noexcept {
         return *this;
     }
@@ -70,7 +70,6 @@ struct Slug<T[]> {
         delete[] ptr;
     }
 };
-
 
 // Primary template
 template <typename T, typename Deleter = Slug<T>>
@@ -375,4 +374,5 @@ template <typename T, typename D>
 void swap(UniquePtr<T, D>& lhs, UniquePtr<T, D>& rhs) noexcept {
     lhs.Swap(rhs);  // Вызов пользовательского метода swap
 }
+
 }
