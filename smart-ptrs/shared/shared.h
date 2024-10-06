@@ -7,7 +7,6 @@
 
 // https://en.cppreference.com/w/cpp/memory/shared_ptr
 
-
 template <typename T>
 class PtrInternalInterface {
 public:
@@ -15,20 +14,21 @@ public:
 
     virtual T* Get() = 0;
     virtual void Destruct() = 0;
-}; // class PtrInternalInterface
+};  // class PtrInternalInterface
 
 template <typename T>
-PtrInternalInterface<T>::~PtrInternalInterface() {}
-
+PtrInternalInterface<T>::~PtrInternalInterface() {
+}
 
 template <typename T, typename D>
-class PtrInternal: public PtrInternalInterface<T> {
+class PtrInternal : public PtrInternalInterface<T> {
 private:
     T* ptr_;
     D deleter_;
 
 public:
-    PtrInternal(T* p, D d): ptr_(p), deleter_(std::move(d)) {}
+    PtrInternal(T* p, D d) : ptr_(p), deleter_(std::move(d)) {
+    }
     ~PtrInternal() override {
         Destruct();
     }
@@ -40,7 +40,7 @@ public:
     void Destruct() override {
         deleter_(ptr_);
     }
-}; // class PtrInternal
+};  // class PtrInternal
 
 template <typename T>
 class Ptr {
@@ -60,7 +60,8 @@ class Ptr {
 
 public:
     template <typename Derived>
-    Ptr(Derived* d) : internal_(new DefaultInternal<Derived>{d, DefaultDeleter<Derived>()}) {}
+    Ptr(Derived* d) : internal_(new DefaultInternal<Derived>{d, DefaultDeleter<Derived>()}) {
+    }
 
     T* Get() {
         return internal_->Get();
@@ -71,7 +72,7 @@ public:
     ~Ptr() {
         delete internal_;
     }
-}; // class Ptr
+};  // class Ptr
 
 struct ControlBlockBase {
     int counter;
