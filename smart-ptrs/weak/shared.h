@@ -142,7 +142,7 @@ struct ControlBlockWithPointer : ControlBlockBase {
 
     Ptr<Derived> ptr;
 
-    void Destruct() {
+    void Destruct() override {
         if (!IsDestructed()) {
             ptr.Destruct();
         }
@@ -319,8 +319,8 @@ inline bool operator==(const SharedPtr<T>& left, const SharedPtr<U>& right) {
 
 template <typename T>
 struct Combined {
-    ControlBlockWithObject<T> cntrl_;
     T obj;
+    ControlBlockWithObject<T> cntrl_;
     template <typename... Args>
     Combined(Args&&... args) : obj(std::forward<Args>(args)...), cntrl_(&obj) {
     }
