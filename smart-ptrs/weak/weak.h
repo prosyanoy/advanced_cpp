@@ -103,7 +103,7 @@ public:
     }
 
     void ReleaseWeakCount() {
-        if (cntrl_ && --cntrl_->weak_count == 0) {
+        if (cntrl_ && cntrl_->RemoveWeak() == 0) {
             if (cntrl_->strong_count == 0) {
                 delete cntrl_;
             } else {
