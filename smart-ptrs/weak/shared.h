@@ -130,8 +130,8 @@ struct ControlBlockWithObject : ControlBlockBase {
 
 template <class Derived>
 struct ControlBlockWithPointer : ControlBlockBase {
-    //ControlBlockWithPointer() : ControlBlockBase(1, 0), ptr() {
-    //}
+    // ControlBlockWithPointer() : ControlBlockBase(1, 0), ptr() {
+    // }
 
     ControlBlockWithPointer(Derived* p) : ControlBlockBase(1, 0), ptr(p) {
     }
