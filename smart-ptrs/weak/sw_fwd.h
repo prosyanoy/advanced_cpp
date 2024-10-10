@@ -74,6 +74,19 @@ public:
     }
 };  // class Ptr
 
+template <class X>
+struct ControlBlockWithObject;
+
+template <typename X>
+struct Combined {
+    X obj;
+    ControlBlockWithObject<X> cntrl_;
+    template <typename... Args>
+    Combined(Args&&... args) : obj(std::forward<Args>(args)...), cntrl_(&obj) {
+    }
+    ~Combined() = delete;
+};  // struct Combined
+
 struct ControlBlockBase {
     int strong_count;
     int weak_count;
@@ -96,51 +109,61 @@ struct ControlBlockBase {
     virtual bool IsDestructed() = 0;
     virtual void Destruct() = 0;
     virtual ~ControlBlockBase() = default;
+    virtual void DeleteSelf() = 0;
 };
 
-template <typename Derived>
+template <typename X>
 struct ControlBlockWithObject : ControlBlockBase {
-    Derived* ptr;
-
-    ControlBlockWithObject(Derived* p) : ControlBlockBase(1, 0), ptr(p) {
-    }
-
+    X* ptr;
     bool hasBeenDestructed;
+
+    ControlBlockWithObject(X* p) : ControlBlockBase(1, 0), ptr(p), hasBeenDestructed(false) {
+    }
 
     bool IsDestructed() override {
         return hasBeenDestructed;
     }
 
-    ~ControlBlockWithObject() {
+    void Destruct() override {
         if (!IsDestructed()) {
-            Destruct();
+            ptr->~X();
+            hasBeenDestructed = true;
         }
     }
 
-    void Destruct() override {
-        ptr->~Derived();
-        hasBeenDestructed = true;
+    void DeleteSelf() override {
+        Destruct();
+        delete this;
+    }
+
+    static void operator delete(void* ptr) {
+        ::operator delete(reinterpret_cast<char*>(ptr) - offsetof(Combined<X>, cntrl_));
     }
 };
 
-template <class Derived>
+template <class X>
 struct ControlBlockWithPointer : ControlBlockBase {
-    // ControlBlockWithPointer() : ControlBlockBase(1, 0), ptr() {
-    // }
+    Ptr<X> ptr;
 
-    ControlBlockWithPointer(Derived* p) : ControlBlockBase(1, 0), ptr(p) {
+    ControlBlockWithPointer(X* p) : ControlBlockBase(1, 0), ptr(p) {
+    }
+
+    template <class Y>
+    ControlBlockWithPointer(Y* p) : ControlBlockBase(1, 0), ptr(p) {
     }
 
     bool IsDestructed() override {
         return ptr.IsDestructed();
     }
 
-    Ptr<Derived> ptr;
-
     void Destruct() override {
         if (!IsDestructed()) {
             ptr.Destruct();
         }
+    }
+
+    void DeleteSelf() override {
+        delete this;
     }
 
     ~ControlBlockWithPointer() {

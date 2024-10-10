@@ -21,8 +21,11 @@ public:
     SharedPtr(std::nullptr_t) noexcept : ptr_(nullptr), cntrl_(nullptr) {
     }
 
+    explicit SharedPtr(X* ptr) : ptr_(ptr), cntrl_(new ControlBlockWithPointer<X>(ptr)) {
+    }
+
     template <class Y, class = std::enable_if_t<std::is_convertible<Y*, X*>::value>>
-    explicit SharedPtr(Y* ptr) : ptr_(ptr), cntrl_(new ControlBlockWithPointer<Y>(ptr)) {
+    explicit SharedPtr(Y* ptr) : ptr_(ptr), cntrl_(new ControlBlockWithPointer<X>(ptr)) {
     }
 
     SharedPtr(const SharedPtr& other) : ptr_(other.ptr_), cntrl_(other.cntrl_) {
@@ -132,7 +135,7 @@ public:
     void ReleaseStrongCount() {
         if (cntrl_ && cntrl_->RemoveStrong() == 0) {
             if (cntrl_->weak_count == 0) {
-                delete cntrl_;
+                cntrl_->DeleteSelf();
             } else {
                 cntrl_->Destruct();
             }
@@ -170,16 +173,6 @@ inline bool operator==(const SharedPtr<T>& left, const SharedPtr<U>& right) {
     return left.ptr_ == reinterpret_cast<U*>(right.ptr_);
     // cntrl?
 }
-
-template <typename T>
-struct Combined {
-    T obj;
-    ControlBlockWithObject<T> cntrl_;
-    template <typename... Args>
-    Combined(Args&&... args) : obj(std::forward<Args>(args)...), cntrl_(&obj) {
-    }
-    ~Combined() = delete;
-};
 
 // Allocate memory only once
 template <typename T, typename... Args>
