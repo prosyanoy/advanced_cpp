@@ -1,9 +1,7 @@
 #pragma once
 
-#include <cstddef> // for std::nullptr_t
-#include <utility> // for std::exchange / std::swap
-#include <exception>
-
+#include <cstddef>  // for std::nullptr_t
+#include <utility>  // for std::exchange / std::swap
 
 class SimpleCounter {
     size_t count_ = 0;
@@ -63,6 +61,7 @@ class IntrusivePtr {
     template <typename Y>
     friend class IntrusivePtr;
     T* ptr_;
+
 public:
     // Constructors
     IntrusivePtr() : ptr_(nullptr) {
@@ -157,7 +156,7 @@ public:
     }
 };
 
-template <typename T, typename ...Args>
-IntrusivePtr<T> MakeIntrusive(Args&& ...args) {
+template <typename T, typename... Args>
+IntrusivePtr<T> MakeIntrusive(Args&&... args) {
     return IntrusivePtr<T>(new T(std::forward<Args>(args)...));
 }
