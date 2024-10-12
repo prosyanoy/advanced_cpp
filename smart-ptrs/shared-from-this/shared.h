@@ -59,8 +59,6 @@ public:
     }
 };
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructors
 
@@ -111,30 +109,34 @@ inline SharedPtr<X>::SharedPtr(const SharedPtr<Y>& other) : ptr_(other.ptr_), cn
 }
 
 template <typename X>
-inline SharedPtr<X>::SharedPtr(SharedPtr&& other) noexcept : ptr_(other.ptr_), cntrl_(other.cntrl_) {
+inline SharedPtr<X>::SharedPtr(SharedPtr&& other) noexcept
+    : ptr_(other.ptr_), cntrl_(other.cntrl_) {
     other.ptr_ = nullptr;
     other.cntrl_ = nullptr;
 }
 
 template <typename X>
 template <class Y, class>
-inline SharedPtr<X>::SharedPtr(SharedPtr<Y>&& other) noexcept : ptr_(other.ptr_), cntrl_(other.cntrl_) {
+inline SharedPtr<X>::SharedPtr(SharedPtr<Y>&& other) noexcept
+    : ptr_(other.ptr_), cntrl_(other.cntrl_) {
     other.ptr_ = nullptr;
     other.cntrl_ = nullptr;
 }
 
-    // Aliasing constructor
-    // #8 from https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
+// Aliasing constructor
+// #8 from https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
 template <typename X>
 template <class Y>
-inline SharedPtr<X>::SharedPtr(const SharedPtr<Y>& other, X* ptr) noexcept : ptr_(ptr), cntrl_(other.cntrl_) {
+inline SharedPtr<X>::SharedPtr(const SharedPtr<Y>& other, X* ptr) noexcept
+    : ptr_(ptr), cntrl_(other.cntrl_) {
     if (cntrl_) {
         cntrl_->AddStrong();
     }
 }
 
 template <typename X>
-inline SharedPtr<X>::SharedPtr(const SharedPtr& other, X* ptr) noexcept : ptr_(ptr), cntrl_(other.cntrl_) {
+inline SharedPtr<X>::SharedPtr(const SharedPtr& other, X* ptr) noexcept
+    : ptr_(ptr), cntrl_(other.cntrl_) {
     if (cntrl_) {
         cntrl_->AddStrong();
     }
@@ -179,7 +181,6 @@ inline SharedPtr<X>& SharedPtr<X>::operator=(const SharedPtr<Y>& other) noexcept
     SharedPtr(other).Swap(*this);
     return *this;
 }
-
 
 template <typename X>
 inline SharedPtr<X>& SharedPtr<X>::operator=(SharedPtr&& other) noexcept {
@@ -232,8 +233,8 @@ inline void SharedPtr<X>::ReleaseStrongCount() {
         }
     }
 }
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // Observers
+////////////////////////////////////////////////////////////////////////////////////////////////
+// Observers
 
 template <typename X>
 inline X* SharedPtr<X>::Get() const {
@@ -291,19 +292,22 @@ inline SharedPtr<void>::SharedPtr(const SharedPtr& other) : ptr_(other.ptr_), cn
 }
 
 template <class Y>
-inline SharedPtr<void>::SharedPtr(const SharedPtr<Y>& other) : ptr_(other.ptr_), cntrl_(other.cntrl_) {
+inline SharedPtr<void>::SharedPtr(const SharedPtr<Y>& other)
+    : ptr_(other.ptr_), cntrl_(other.cntrl_) {
     if (other.cntrl_) {
         other.cntrl_->AddStrong();
     }
 }
 
-inline SharedPtr<void>::SharedPtr(SharedPtr&& other) noexcept : ptr_(other.ptr_), cntrl_(other.cntrl_) {
+inline SharedPtr<void>::SharedPtr(SharedPtr&& other) noexcept
+    : ptr_(other.ptr_), cntrl_(other.cntrl_) {
     other.ptr_ = nullptr;
     other.cntrl_ = nullptr;
 }
 
 template <class Y>
-inline SharedPtr<void>::SharedPtr(SharedPtr<Y>&& other) noexcept : ptr_(other.ptr_), cntrl_(other.cntrl_) {
+inline SharedPtr<void>::SharedPtr(SharedPtr<Y>&& other) noexcept
+    : ptr_(other.ptr_), cntrl_(other.cntrl_) {
     other.ptr_ = nullptr;
     other.cntrl_ = nullptr;
 }
@@ -311,7 +315,8 @@ inline SharedPtr<void>::SharedPtr(SharedPtr<Y>&& other) noexcept : ptr_(other.pt
 // Aliasing constructor
 // #8 from https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
 template <class Y>
-inline SharedPtr<void>::SharedPtr(const SharedPtr<Y>& other, void* ptr) noexcept : ptr_(ptr), cntrl_(other.cntrl_) {
+inline SharedPtr<void>::SharedPtr(const SharedPtr<Y>& other, void* ptr) noexcept
+    : ptr_(ptr), cntrl_(other.cntrl_) {
     if (cntrl_) {
         cntrl_->AddStrong();
     }
@@ -348,7 +353,6 @@ inline SharedPtr<void>& SharedPtr<void>::operator=(const SharedPtr<Y>& other) no
     SharedPtr(other).Swap(*this);
     return *this;
 }
-
 
 inline SharedPtr<void>& SharedPtr<void>::operator=(SharedPtr&& other) noexcept {
     SharedPtr(std::move(other)).Swap(*this);

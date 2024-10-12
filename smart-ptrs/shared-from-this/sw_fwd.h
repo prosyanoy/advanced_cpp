@@ -176,7 +176,7 @@ class BadWeakPtr : public std::exception {};
 template <typename X>
 class WeakPtr;
 
-template<>
+template <>
 class WeakPtr<void>;
 
 template <typename X>
@@ -209,7 +209,8 @@ public:
 
     explicit SharedPtr(const WeakPtr<X>& other);
 
-    template <class Y, class = std::enable_if_t<std::is_convertible_v<Y*, X*> || std::is_same_v<Y, void>>>
+    template <class Y,
+              class = std::enable_if_t<std::is_convertible_v<Y*, X*> || std::is_same_v<Y, void>>>
     explicit SharedPtr(const WeakPtr<Y>& other);
 
     SharedPtr<X>& operator=(const SharedPtr<X>& other) noexcept;
@@ -303,12 +304,14 @@ public:
 
     WeakPtr(const WeakPtr& other);
 
-    template <class Y, class = std::enable_if_t<std::is_convertible<Y*, X*>::value || std::is_same_v<Y, void>>>
+    template <class Y, class = std::enable_if_t<std::is_convertible<Y*, X*>::value ||
+                                                std::is_same_v<Y, void>>>
     WeakPtr(const WeakPtr<Y>& other);
 
     WeakPtr(WeakPtr&& other) noexcept;
 
-    template <class Y, class = std::enable_if_t<std::is_convertible<Y*, X*>::value || std::is_same_v<Y, void>>>
+    template <class Y, class = std::enable_if_t<std::is_convertible<Y*, X*>::value ||
+                                                std::is_same_v<Y, void>>>
     WeakPtr(WeakPtr<Y>&& other) noexcept;
 
     template <class Y, class = std::enable_if_t<std::is_convertible<Y*, X*>::value>>
@@ -317,22 +320,19 @@ public:
     WeakPtr& operator=(const WeakPtr& other);
 
     template <class Y,
-              class = std::enable_if_t<std::is_convertible_v<Y*, X*> &&
-                                       !std::is_same_v<Y, void>>>
+              class = std::enable_if_t<std::is_convertible_v<Y*, X*> && !std::is_same_v<Y, void>>>
     WeakPtr& operator=(const WeakPtr<Y>& other);
 
     WeakPtr& operator=(const SharedPtr<X>& other);
 
     template <class Y,
-              class = std::enable_if_t<std::is_convertible_v<Y*, X*> &&
-                                       !std::is_same_v<Y, void>>>
+              class = std::enable_if_t<std::is_convertible_v<Y*, X*> && !std::is_same_v<Y, void>>>
     WeakPtr& operator=(const SharedPtr<Y>& other);
 
     WeakPtr& operator=(WeakPtr&& other);
 
     template <class Y,
-              class = std::enable_if_t<std::is_convertible_v<Y*, X*> &&
-                                       !std::is_same_v<Y, void>>>
+              class = std::enable_if_t<std::is_convertible_v<Y*, X*> && !std::is_same_v<Y, void>>>
     WeakPtr& operator=(WeakPtr<Y>&& other);
 
     ~WeakPtr();
@@ -415,4 +415,3 @@ class ESFTBase;
 
 template <typename X>
 class EnableSharedFromThis;
-

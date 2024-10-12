@@ -48,8 +48,8 @@ inline WeakPtr<X>::WeakPtr(const SharedPtr<Y>& other) : ptr_(other.ptr_), cntrl_
     }
 }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // `operator=`-s
+////////////////////////////////////////////////////////////////////////////////////////////////
+// `operator=`-s
 
 template <typename X>
 inline WeakPtr<X>& WeakPtr<X>::operator=(const WeakPtr& other) {
@@ -122,7 +122,6 @@ inline void WeakPtr<X>::ReleaseWeakCount() {
     }
 }
 
-
 template <typename X>
 inline void WeakPtr<X>::Release() {
     if (cntrl_->strong_count == 0) {
@@ -155,10 +154,8 @@ inline SharedPtr<X> WeakPtr<X>::Lock() const {
     return Expired() ? SharedPtr<X>() : SharedPtr<X>(*this);
 }
 
-
 /////////////////////////////////////////////////////////////////////////////
 // VOID
-
 
 inline WeakPtr<void>::WeakPtr() noexcept : ptr_(nullptr), cntrl_(nullptr) {
 }
@@ -182,7 +179,8 @@ inline WeakPtr<void>::WeakPtr(WeakPtr&& other) noexcept : ptr_(other.ptr_), cntr
 }
 
 template <class Y>
-inline WeakPtr<void>::WeakPtr(WeakPtr<Y>&& other) noexcept : ptr_(other.ptr_), cntrl_(other.cntrl_) {
+inline WeakPtr<void>::WeakPtr(WeakPtr<Y>&& other) noexcept
+    : ptr_(other.ptr_), cntrl_(other.cntrl_) {
     other.ptr_ = nullptr;
     other.cntrl_ = nullptr;
 }
@@ -259,7 +257,6 @@ inline void WeakPtr<void>::ReleaseWeakCount() {
         }
     }
 }
-
 
 inline void WeakPtr<void>::Release() {
     if (cntrl_->strong_count == 0) {
