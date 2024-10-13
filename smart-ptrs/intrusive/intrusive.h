@@ -48,7 +48,8 @@ public:
     RefCounted() = default;
 
     // Конструктор копирования
-    RefCounted(const RefCounted&) : counter_() {}
+    RefCounted(const RefCounted&) : counter_() {
+    }
 
     // Оператор присваивания копированием
     RefCounted& operator=(const RefCounted&) {
@@ -57,7 +58,9 @@ public:
     }
 
     // Конструкторы перемещения
-    RefCounted(RefCounted&&) noexcept : counter_() {}
+    RefCounted(RefCounted&&) noexcept : counter_() {
+    }
+
     RefCounted& operator=(RefCounted&&) noexcept {
         counter_ = Counter();
         return *this;
