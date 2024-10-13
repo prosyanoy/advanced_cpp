@@ -7,6 +7,16 @@ class SimpleCounter {
     size_t count_ = 0;
 
 public:
+    SimpleCounter& operator=(const SimpleCounter& other) {
+        // Do nothing
+        return *this;
+    }
+
+    SimpleCounter& operator=(SimpleCounter&& other) {
+        // Do nothing
+        return *this;
+    }
+
     size_t IncRef() {
         return ++count_;
     }
@@ -34,6 +44,25 @@ class RefCounted {
     Counter counter_ = Counter();
 
 public:
+    // Конструктор по умолчанию
+    RefCounted() = default;
+
+    // Конструктор копирования
+    RefCounted(const RefCounted&) : counter_() {}
+
+    // Оператор присваивания копированием
+    RefCounted& operator=(const RefCounted&) {
+        counter_ = Counter();
+        return *this;
+    }
+
+    // Конструкторы перемещения
+    RefCounted(RefCounted&&) noexcept : counter_() {}
+    RefCounted& operator=(RefCounted&&) noexcept {
+        counter_ = Counter();
+        return *this;
+    }
+
     // Increase reference counter.
     void IncRef() {
         counter_.IncRef();
