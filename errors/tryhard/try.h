@@ -20,9 +20,13 @@ public:
     }
     Try(std::exception_ptr ex, bool) : value_(), IsEmpty_(true), ex_(ex) {
     }
-    Try(const char* ex) : value_(), IsEmpty_(true), ex_(std::make_exception_ptr(std::runtime_error(ex))) {
+    Try(const char* ex)
+        : value_(), IsEmpty_(true), ex_(std::make_exception_ptr(std::runtime_error(ex))) {
     }
-    Try(int ex, bool) : value_(), IsEmpty_(true), ex_(std::make_exception_ptr(std::runtime_error(std::strerror(ex)))) {
+    Try(int ex, bool)
+        : value_(),
+          IsEmpty_(true),
+          ex_(std::make_exception_ptr(std::runtime_error(std::strerror(ex)))) {
     }
 
     const T& Value() {
@@ -36,6 +40,7 @@ public:
             }
         }
     }
+
     void Throw() {
         if (ex_) {
             std::rethrow_exception(ex_);
@@ -43,7 +48,7 @@ public:
             throw std::runtime_error("No exception");
         }
     }
-    
+
     bool IsFailed() {
         return ex_ != nullptr;
     }
