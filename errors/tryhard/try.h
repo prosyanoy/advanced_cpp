@@ -2,6 +2,7 @@
 
 #include <exception>
 #include <stdexcept>
+#include <cstring>
 
 template <class T>
 class Try {
@@ -50,20 +51,19 @@ public:
 
 template <>
 class Try<void> {
-    bool IsEmpty_;
     std::exception_ptr ex_;
 
 public:
-    Try() : IsEmpty_(true), ex_(nullptr) {
+    Try() : ex_(nullptr) {
     }
-    Try(const std::exception& ex) : IsEmpty_(true) {
+    Try(const std::exception& ex) {
         ex_ = std::make_exception_ptr(std::runtime_error(ex.what()));
     }
-    Try(std::exception_ptr ex, bool) : IsEmpty_(true), ex_(ex) {
+    Try(std::exception_ptr ex, bool) : ex_(ex) {
     }
-    Try(const char* ex) : IsEmpty_(true), ex_(std::make_exception_ptr(std::runtime_error(ex))) {
+    Try(const char* ex) : ex_(std::make_exception_ptr(std::runtime_error(ex))) {
     }
-    Try(int ex, bool) : IsEmpty_(true), ex_(std::make_exception_ptr(std::runtime_error(std::strerror(ex)))) {
+    Try(int ex, bool) : ex_(std::make_exception_ptr(std::runtime_error(std::strerror(ex)))) {
     }
     void Throw() {
         if (ex_) {
