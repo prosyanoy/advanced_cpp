@@ -7,25 +7,25 @@
 template <class T>
 class Try {
     T value_;
-    bool IsEmpty_;
+    bool is_empty_;
     std::exception_ptr ex_;
 
 public:
-    Try() : value_(), IsEmpty_(true), ex_(nullptr) {
+    Try() : value_(), is_empty_(true), ex_(nullptr) {
     }
-    Try(T value) : value_(value), IsEmpty_(false), ex_(nullptr) {
+    Try(T value) : value_(value), is_empty_(false), ex_(nullptr) {
     }
-    Try(const std::exception& ex) : value_(), IsEmpty_(true) {
+    Try(const std::exception& ex) : value_(), is_empty_(true) {
         ex_ = std::make_exception_ptr(std::runtime_error(ex.what()));
     }
-    Try(std::exception_ptr ex, bool) : value_(), IsEmpty_(true), ex_(ex) {
+    Try(std::exception_ptr ex, bool) : value_(), is_empty_(true), ex_(ex) {
     }
     Try(const char* ex)
-        : value_(), IsEmpty_(true), ex_(std::make_exception_ptr(std::runtime_error(ex))) {
+        : value_(), is_empty_(true), ex_(std::make_exception_ptr(std::runtime_error(ex))) {
     }
     Try(int ex, bool)
         : value_(),
-          IsEmpty_(true),
+          is_empty_(true),
           ex_(std::make_exception_ptr(std::runtime_error(std::strerror(ex)))) {
     }
 
@@ -33,7 +33,7 @@ public:
         if (ex_) {
             std::rethrow_exception(ex_);
         } else {
-            if (IsEmpty_) {
+            if (is_empty_) {
                 throw std::runtime_error("Object is empty");
             } else {
                 return value_;
