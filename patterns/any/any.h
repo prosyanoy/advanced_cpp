@@ -4,7 +4,8 @@
 class Any {
     struct InnerBase {
         using Pointer = std::unique_ptr<InnerBase>;
-        virtual ~InnerBase() {}
+        virtual ~InnerBase() {
+        }
         virtual InnerBase* Clone() const = 0;
         virtual bool Empty() = 0;
     };
@@ -24,6 +25,7 @@ class Any {
         virtual bool Empty() override {
             return IsEmpty_;
         }
+
     private:
         T value_;
         bool IsEmpty_;
