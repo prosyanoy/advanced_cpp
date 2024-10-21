@@ -33,13 +33,13 @@ struct SplineImpl {
 
     ~SplineImpl() {
         if (X) {
-            delete X;
+            delete[] X;
         }
         if (Y) {
-            delete Y;
+            delete[] Y;
         }
         if (Y2) {
-            delete Y2;
+            delete[] Y2;
         }
     }
 };
