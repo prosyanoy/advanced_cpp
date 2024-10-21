@@ -10,7 +10,8 @@ struct SplineImpl {
     double B;
     double* output;
 
-    SplineImpl(const std::vector<double>& x, const std::vector<double>& y, double a, double b) : A(a), B(b) {
+    SplineImpl(const std::vector<double>& x, const std::vector<double>& y, double a, double b)
+        : A(a), B(b) {
         n = x.size();
         X = new double[n];
         Y = new double[n];
@@ -36,6 +37,9 @@ struct SplineImpl {
         }
         if (Y) {
             delete Y;
+        }
+        if (Y2) {
+            delete Y2;
         }
     }
 };
