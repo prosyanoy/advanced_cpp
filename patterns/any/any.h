@@ -11,10 +11,10 @@ class Any {
     };
     template <typename T>
     struct Inner : InnerBase {
-        Inner(const T& newval, bool is_empty) : value_(newval), IsEmpty_(is_empty) {
+        Inner(const T& newval, bool is_empty) : value_(newval), is_empty_(is_empty) {
         }
         virtual InnerBase* Clone() const override {
-            return new Inner(value_, IsEmpty_);
+            return new Inner(value_, is_empty_);
         }
         T& operator*() {
             return value_;
@@ -23,12 +23,12 @@ class Any {
             return value_;
         }
         virtual bool Empty() override {
-            return IsEmpty_;
+            return is_empty_;
         }
 
     private:
         T value_;
-        bool IsEmpty_;
+        bool is_empty_;
     };
     InnerBase::Pointer inner_;
 
