@@ -10,7 +10,7 @@ public:
     // declares an interface for executing an operation.
     virtual void Execute() = 0;
     virtual ~Command() = default;
-    virtual typename std::list<char>::iterator GetCursor() = 0;
+
 protected:
     Command() = default;
 };
@@ -23,18 +23,20 @@ public:
         return flag;
     }
 
-    typedef void (Receiver::* Action)(char c, std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr);
-    TypeCommand(char c, std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr, std::shared_ptr<Receiver> receiver, Action action) :
-          character_(c), buffer_(buffer), cursor_ptr_(cursor_ptr), cursor_(*cursor_ptr), receiver_(receiver.get()), action_(action) {
+    typedef void (Receiver::* Action)(char c, std::list<char>* buffer,
+                                     typename std::list<char>::iterator* cursor_ptr);
+    TypeCommand(char c, std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr,
+                std::shared_ptr<Receiver> receiver, Action action)
+        : character_(c),
+          buffer_(buffer),
+          cursor_ptr_(cursor_ptr),
+          receiver_(receiver.get()),
+          action_(action) {
     }
     TypeCommand(const TypeCommand&) = delete;
     const TypeCommand& operator=(const TypeCommand&) = delete;
     virtual void Execute() {
         (receiver_->*action_)(character_, buffer_, cursor_ptr_);
-    }
-
-    virtual typename std::list<char>::iterator GetCursor() {
-        return cursor_;
     }
 
     char GetChar() {
@@ -45,7 +47,6 @@ private:
     char character_;
     std::list<char>* buffer_;
     typename std::list<char>::iterator* cursor_ptr_;
-    typename std::list<char>::iterator cursor_;
     Receiver* receiver_;
     Action action_;
 };
@@ -58,9 +59,14 @@ public:
         return flag;
     }
 
-    typedef void (Receiver::* Action)(std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr);
-    ShiftLeftCommand(std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr, std::shared_ptr<Receiver> receiver, Action action) :
-          buffer_(buffer), cursor_ptr_(cursor_ptr), cursor_(*cursor_ptr), receiver_(receiver.get()), action_(action) {
+    typedef void (Receiver::* Action)(std::list<char>* buffer,
+                                     typename std::list<char>::iterator* cursor_ptr);
+    ShiftLeftCommand(std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr,
+                     std::shared_ptr<Receiver> receiver, Action action)
+        : buffer_(buffer),
+          cursor_ptr_(cursor_ptr),
+          receiver_(receiver.get()),
+          action_(action) {
     }
     ShiftLeftCommand(const ShiftLeftCommand&) = delete;
     const ShiftLeftCommand& operator=(const ShiftLeftCommand&) = delete;
@@ -68,14 +74,10 @@ public:
         (receiver_->*action_)(buffer_, cursor_ptr_);
     }
 
-    virtual typename std::list<char>::iterator GetCursor() {
-        return cursor_;
-    }
 
 private:
     std::list<char>* buffer_;
     typename std::list<char>::iterator* cursor_ptr_;
-    typename std::list<char>::iterator cursor_;
     Receiver* receiver_;
     Action action_;
 };
@@ -88,9 +90,11 @@ public:
         return flag;
     }
 
-    typedef void (Receiver::* Action)(std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr);
-    ShiftRightCommand(std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr, std::shared_ptr<Receiver> receiver, Action action) :
-          buffer_(buffer), cursor_ptr_(cursor_ptr), cursor_(*cursor_ptr), receiver_(receiver.get()), action_(action) {
+    typedef void (Receiver::* Action)(std::list<char>* buffer,
+                                     typename std::list<char>::iterator* cursor_ptr);
+    ShiftRightCommand(std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr,
+                      std::shared_ptr<Receiver> receiver, Action action)
+        : buffer_(buffer), cursor_ptr_(cursor_ptr), receiver_(receiver.get()), action_(action) {
     }
     ShiftRightCommand(const ShiftRightCommand&) = delete;
     const ShiftRightCommand& operator=(const ShiftRightCommand&) = delete;
@@ -98,14 +102,9 @@ public:
         (receiver_->*action_)(buffer_, cursor_ptr_);
     }
 
-    virtual typename std::list<char>::iterator GetCursor() {
-        return cursor_;
-    }
-
 private:
     std::list<char>* buffer_;
     typename std::list<char>::iterator* cursor_ptr_;
-    typename std::list<char>::iterator cursor_;
     Receiver* receiver_;
     Action action_;
 };
@@ -118,18 +117,21 @@ public:
         return flag;
     }
 
-    typedef void (Receiver::* Action)(std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr);
-    BackspaceCommand(char c, std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr, std::shared_ptr<Receiver> receiver, Action action) :
-          character_(c), buffer_(buffer), cursor_ptr_(cursor_ptr), cursor_(*cursor_ptr), receiver_(receiver.get()), action_(action) {
+    typedef void (Receiver::* Action)(std::list<char>* buffer,
+                                     typename std::list<char>::iterator* cursor_ptr);
+    BackspaceCommand(char c, std::list<char>* buffer,
+                     typename std::list<char>::iterator* cursor_ptr,
+                     std::shared_ptr<Receiver> receiver, Action action)
+        : character_(c),
+          buffer_(buffer),
+          cursor_ptr_(cursor_ptr),
+          receiver_(receiver.get()),
+          action_(action) {
     }
     BackspaceCommand(const BackspaceCommand&) = delete;
     const BackspaceCommand& operator=(const BackspaceCommand&) = delete;
     virtual void Execute() {
         (receiver_->*action_)(buffer_, cursor_ptr_);
-    }
-
-    virtual typename std::list<char>::iterator GetCursor() {
-        return cursor_;
     }
 
     char GetChar() {
@@ -140,7 +142,6 @@ private:
     char character_;
     std::list<char>* buffer_;
     typename std::list<char>::iterator* cursor_ptr_;
-    typename std::list<char>::iterator cursor_;
     Receiver* receiver_;
     Action action_;
 };
@@ -154,27 +155,28 @@ public:
     }
 
     typedef void (Receiver::* Action)(std::shared_ptr<Command> cmd, std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr);
-    UndoCommand(std::shared_ptr<Command> cmd, std::list<char>* buffer, typename std::list<char>::iterator* cursor_ptr, std::shared_ptr<Receiver> receiver, Action action) :
-          cmd_(cmd), buffer_(buffer), cursor_ptr_(cursor_ptr), cursor_(*cursor_ptr), receiver_(receiver.get()), action_(action) {
+    UndoCommand(std::shared_ptr<Command> cmd, std::list<char>* buffer,
+                typename std::list<char>::iterator* cursor_ptr, std::shared_ptr<Receiver> receiver,
+                Action action)
+        : cmd_(cmd),
+          buffer_(buffer),
+          cursor_ptr_(cursor_ptr),
+          receiver_(receiver.get()),
+          action_(action) {
     }
     UndoCommand(const UndoCommand&) = delete;
     const UndoCommand& operator=(const UndoCommand&) = delete;
     virtual void Execute() {
         (receiver_->*action_)(cmd_, buffer_, cursor_ptr_);
     }
-    virtual typename std::list<char>::iterator GetCursor() {
-        return cursor_;
-    }
 
 private:
     std::shared_ptr<Command> cmd_;
     std::list<char>* buffer_;
     typename std::list<char>::iterator* cursor_ptr_;
-    typename std::list<char>::iterator cursor_;
     Receiver* receiver_;
     Action action_;
 };
-
 
 template <typename Receiver>
 class RedoCommand : public Command {
@@ -185,16 +187,14 @@ public:
     }
 
     typedef void (Receiver::* Action)(std::shared_ptr<Command> cmd);
-    RedoCommand(std::shared_ptr<Command> cmd, typename std::list<char>::iterator* cursor_ptr, std::shared_ptr<Receiver> receiver, Action action) :
-          cmd_(cmd), cursor_(*cursor_ptr), receiver_(receiver.get()), action_(action) {
+    RedoCommand(std::shared_ptr<Command> cmd, typename std::list<char>::iterator* cursor_ptr,
+                std::shared_ptr<Receiver> receiver, Action action)
+        : cmd_(cmd), cursor_(*cursor_ptr), receiver_(receiver.get()), action_(action) {
     }
     RedoCommand(const RedoCommand&) = delete;
     const RedoCommand& operator=(const RedoCommand&) = delete;
     virtual void Execute() {
         (receiver_->*action_)(cmd_);
-    }
-    virtual typename std::list<char>::iterator GetCursor() {
-        return cursor_;
     }
 
 private:
@@ -204,10 +204,10 @@ private:
     Action action_;
 };
 
-
 struct Receiver {
     // 1
-    void Type(char c, std::list<char>* buffer, typename std::list<char>::iterator* cursor) {
+    void Type(char c, std::list<char>* buffer,
+              typename std::list<char>::iterator* cursor) {
         buffer->insert(*cursor, c);
     }
 
@@ -243,7 +243,8 @@ struct Receiver {
         } else if (flag == 3) {
             ShiftLeft(buffer, cursor);
         } else if (flag == 4) {
-            if (auto backspace = dynamic_cast<BackspaceCommand<Receiver>*>(cmd.get()); backspace != nullptr) {
+            if (auto backspace = dynamic_cast<BackspaceCommand<Receiver>*>(cmd.get());
+                backspace != nullptr) {
                 char c = backspace->GetChar();
                 Type(c, buffer, cursor);
             }
@@ -261,7 +262,7 @@ struct MyString {
 };
 class Editor {
 public:
-    const std::string &GetText() const {
+    const std::string& GetText() const {
         uptr->s.clear();
         auto it = buffer_.begin();
         while (*it != '\0') {
@@ -270,7 +271,6 @@ public:
         }
         return uptr->s;
     }
-
 
     void ExecuteCommand(std::shared_ptr<Command> cmd) {
         cmd->Execute();
@@ -281,9 +281,9 @@ public:
     }
 
     void Type(char c) {
-        std::shared_ptr<Command> command = std::make_shared<TypeCommand<Receiver>>(c, &buffer_, &cursor_, receiver_, &Receiver::Type);
+        std::shared_ptr<Command> command = std::make_shared<TypeCommand<Receiver>>(
+            c, &buffer_, &cursor_, receiver_, &Receiver::Type);
         ExecuteCommand(command);
-        // Build();
     }
 
     void ShiftLeft() {
@@ -308,7 +308,6 @@ public:
             std::shared_ptr<Command> command = std::make_shared<BackspaceCommand<Receiver>>(
                 c, &buffer_, &cursor_, receiver_, &Receiver::Backspace);
             ExecuteCommand(command);
-            // Build();
         }
     }
 
@@ -321,7 +320,6 @@ public:
                 prev_cmd, &buffer_, &cursor_, receiver_,
                 &Receiver::Undo);  // In template: no matching function for call to '__construct_at'
             command->Execute();
-            // Build();
         }
     }
 
@@ -334,7 +332,6 @@ public:
                 prev_cmd, &cursor_, receiver_,
                 &Receiver::Redo);  // In template: no matching function for call to '__construct_at'
             command->Execute();
-            // Build();
         }
     }
 
