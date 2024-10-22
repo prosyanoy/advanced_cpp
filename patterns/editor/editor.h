@@ -150,7 +150,7 @@ public:
         return flag;
     }
 
-    typedef void (Receiver::* Action)(std::shared_ptr<Command> cmd, std::list<char>* buffer,
+    typedef void (Receiver::*Action)(std::shared_ptr<Command> cmd, std::list<char>* buffer,
                                      typename std::list<char>::iterator* cursor_ptr);
     UndoCommand(std::shared_ptr<Command> cmd, std::list<char>* buffer,
                 typename std::list<char>::iterator* cursor_ptr, std::shared_ptr<Receiver> receiver,
