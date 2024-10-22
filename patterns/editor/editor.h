@@ -18,9 +18,9 @@ protected:
 template <typename Receiver>
 class TypeCommand : public Command {
 public:
-    static constexpr int flag = 1;
+    static constexpr int kFlag = 1;
     virtual int GetFlag() {
-        return flag;
+        return kFlag;
     }
 
     typedef void (Receiver::*Action)(char c, std::list<char>* buffer,
@@ -54,9 +54,9 @@ private:
 template <typename Receiver>
 class ShiftLeftCommand : public Command {
 public:
-    static constexpr int flag = 2;
+    static constexpr int kFlag = 2;
     virtual int GetFlag() {
-        return flag;
+        return kFlag;
     }
 
     typedef void (Receiver::*Action)(std::list<char>* buffer,
@@ -81,9 +81,9 @@ private:
 template <typename Receiver>
 class ShiftRightCommand : public Command {
 public:
-    static constexpr int flag = 3;
+    static constexpr int kFlag = 3;
     virtual int GetFlag() {
-        return flag;
+        return kFlag;
     }
 
     typedef void (Receiver::*Action)(std::list<char>* buffer,
@@ -108,9 +108,9 @@ private:
 template <typename Receiver>
 class BackspaceCommand : public Command {
 public:
-    static constexpr int flag = 4;
+    static constexpr int kFlag = 4;
     virtual int GetFlag() {
-        return flag;
+        return kFlag;
     }
 
     typedef void (Receiver::*Action)(std::list<char>* buffer,
@@ -145,9 +145,9 @@ private:
 template <typename Receiver>
 class UndoCommand : public Command {
 public:
-    static constexpr int flag = 5;
+    static constexpr int kFlag = 5;
     virtual int GetFlag() {
-        return flag;
+        return kFlag;
     }
 
     typedef void (Receiver::*Action)(std::shared_ptr<Command> cmd, std::list<char>* buffer,
@@ -178,9 +178,9 @@ private:
 template <typename Receiver>
 class RedoCommand : public Command {
 public:
-    static constexpr int flag = 6;
+    static constexpr int kFlag = 6;
     virtual int GetFlag() {
-        return flag;
+        return kFlag;
     }
 
     typedef void (Receiver::*Action)(std::shared_ptr<Command> cmd);
@@ -260,20 +260,20 @@ struct MyString {
 class Editor {
 public:
     const std::string& GetText() const {
-        uptr->s.clear();
+        uptr_->s.clear();
         auto it = buffer_.begin();
         while (*it != '\0') {
-            uptr->s += *it;
+            uptr_->s += *it;
             ++it;
         }
-        return uptr->s;
+        return uptr_->s;
     }
 
     void ExecuteCommand(std::shared_ptr<Command> cmd) {
         cmd->Execute();
-        undoStack.push(cmd);
-        while (!redoStack.empty()) {
-            redoStack.pop();
+        undo_stack_.push(cmd);
+        while (!redo_stack_.empty()) {
+            redo_stack_.pop();
         }
     }
 
@@ -309,10 +309,10 @@ public:
     }
 
     void Undo() {
-        if (!undoStack.empty()) {
-            auto prev_cmd = undoStack.top();
-            redoStack.push(prev_cmd);
-            undoStack.pop();
+        if (!undo_stack_.empty()) {
+            auto prev_cmd = undo_stack_.top();
+            redo_stack_.push(prev_cmd);
+            undo_stack_.pop();
             std::shared_ptr<Command> command = std::make_shared<UndoCommand<Receiver>>(
                 prev_cmd, &buffer_, &cursor_, receiver_,
                 &Receiver::Undo);  // In template: no matching function for call to '__construct_at'
@@ -321,10 +321,10 @@ public:
     }
 
     void Redo() {
-        if (!redoStack.empty()) {
-            auto prev_cmd = redoStack.top();
-            undoStack.push(prev_cmd);
-            redoStack.pop();
+        if (!redo_stack_.empty()) {
+            auto prev_cmd = redo_stack_.top();
+            undo_stack_.push(prev_cmd);
+            redo_stack_.pop();
             std::shared_ptr<Command> command = std::make_shared<RedoCommand<Receiver>>(
                 prev_cmd, &cursor_, receiver_,
                 &Receiver::Redo);  // In template: no matching function for call to '__construct_at'
@@ -333,14 +333,14 @@ public:
     }
 
 private:
-    std::unique_ptr<MyString> uptr = std::make_unique<MyString>();
+    std::unique_ptr<MyString> uptr_ = std::make_unique<MyString>();
 
     std::shared_ptr<Receiver> receiver_ = std::make_shared<Receiver>();
     std::list<char> buffer_ = {'\0'};
     typename std::list<char>::iterator cursor_ = buffer_.begin();
 
-    std::stack<std::shared_ptr<Command>> undoStack;
-    std::stack<std::shared_ptr<Command>> redoStack;
+    std::stack<std::shared_ptr<Command>> undo_stack_;
+    std::stack<std::shared_ptr<Command>> redo_stack_;
 
     std::string s_;
 };
