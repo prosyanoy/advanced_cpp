@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <exception>
+#include <functional>
 
 class AbstractTest {
 public:
