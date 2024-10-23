@@ -1,7 +1,13 @@
 #pragma once
 
+#include <memory>
+#include <string>
 #include <unordered_set>
 #include <unordered_map>
+#include <vector>
+#include <algorithm>
+#include <stdexcept>
+#include <exception>
 
 class AbstractTest {
 public:
@@ -14,7 +20,8 @@ public:
 
 class TestRegistry {
     std::unordered_set<std::string> registered_tests_;
-    std::unordered_map<std::string, std::function<std::unique_ptr<AbstractTest>()>> test_constructors_;
+    std::unordered_map<std::string, std::function<std::unique_ptr<AbstractTest>()>>
+        test_constructors_;
 
 public:
     TestRegistry() = default;
@@ -92,7 +99,8 @@ public:
 
 class FullMatch {
 public:
-    explicit FullMatch(const std::string& pattern) : pattern_(pattern) {}
+    explicit FullMatch(const std::string& pattern) : pattern_(pattern) {
+    }
 
     bool operator()(const std::string& test_name) const {
         return test_name == pattern_;
@@ -104,7 +112,8 @@ private:
 
 class Substr {
 public:
-    explicit Substr(const std::string& substr) : substr_(substr) {}
+    explicit Substr(const std::string& substr) : substr_(substr) {
+    }
 
     bool operator()(const std::string& test_name) const {
         return test_name.find(substr_) != std::string::npos;
