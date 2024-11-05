@@ -9,47 +9,47 @@ public:
 };
 
 class Number : public Object {
-    int value;
+    int value_;
 
 public:
-    Number(int val) : value(val) {
+    Number(int val) : value_(val) {
     }
     int GetValue() const {
-        return value;
+        return value_;
     }
 };
 
 class Symbol : public Object {
-    std::string name;
+    std::string name_;
 
 public:
-    Symbol(std::string name) : name(name) {
+    Symbol(std::string name) : name_(name) {
     }
     const std::string& GetName() const {
-        return name;
+        return name_;
     }
 };
 
 class Cell : public Object {
-    std::shared_ptr<Object> first;
-    std::shared_ptr<Object> second;
+    std::shared_ptr<Object> first_;
+    std::shared_ptr<Object> second_;
 
 public:
-    Cell() : first(nullptr), second(nullptr) {
+    Cell() : first_(nullptr), second_(nullptr) {
     }
 
     void SetFirst(std::shared_ptr<Object> f) {
-        first = f;
+        first_ = f;
     }
     void SetSecond(std::shared_ptr<Object> s) {
-        second = s;
+        second_ = s;
     }
 
     std::shared_ptr<Object> GetFirst() const {
-        return first;
+        return first_;
     }
     std::shared_ptr<Object> GetSecond() const {
-        return second;
+        return second_;
     }
 };
 
