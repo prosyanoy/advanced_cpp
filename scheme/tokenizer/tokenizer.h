@@ -40,7 +40,8 @@ struct ConstantToken {
     }
 };
 
-using Token = std::variant<ConstantToken, BracketToken, SymbolToken, QuoteToken, DotToken, EmptyToken>;
+using Token =
+    std::variant<ConstantToken, BracketToken, SymbolToken, QuoteToken, DotToken, EmptyToken>;
 
 class Tokenizer {
     std::istream* i_;
