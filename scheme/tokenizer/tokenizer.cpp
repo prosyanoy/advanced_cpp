@@ -1,12 +1,12 @@
 #include <tokenizer.h>
 #include <error.h>
 
-bool IsNumber(char c) {
-    return c != '\0' && c >= '0' && c <= '9';
+bool IsNumber(int c) {
+    return c != EOF && c >= '0' && c <= '9';
 }
 
-bool IsSymbol(char c) {
-    return c != '\0' &&
+bool IsSymbol(int c) {
+    return c != EOF &&
            ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '+' || c == '-' || c == '.' ||
             c == '*' || c == '/' || c == '<' || c == '=' || c == '>' || c == '!' || c == '?' ||
             c == ':' || c == '$' || c == '%' || c == '_' || c == '&' || c == '~' || c == '^');
@@ -17,14 +17,16 @@ Tokenizer::Tokenizer(std::istream* in) : i_(in) {
 }
 
 Token Tokenizer::Get() {
-    char c;
-    while (i_->peek() == ' ' || i_->peek() == '\n') {
+    int c;
+    while ((c = i_->peek()) != EOF && (c == ' ' || c == '\n')) {
         i_->get();
     }
-    i_->get(c);
-    if (c == '\0') {
+    c = i_->get();
+    if (c == EOF) {
         return EmptyToken();
-    } else if (c == '\'') {
+    }
+
+    if (c == '\'') {
         return QuoteToken();
     } else if (c == '.') {
         return DotToken();
@@ -34,28 +36,26 @@ Token Tokenizer::Get() {
         return BracketToken::CLOSE;
     } else {
         if (c == ' ') {
-            while (i_->peek() == ' ' || i_->peek() == '\n') {
+            while ((c = i_->peek()) != EOF && (c == ' ' || c == '\n')) {
                 i_->get();
             }
-            i_->get(c);
-            if (c == '\0') {
+            c = i_->get();
+            if (c == EOF) {
                 return EmptyToken();
             }
         }
         if ((c == '-' && IsNumber(i_->peek())) || IsNumber(c)) {
             std::string number;
-            number += c;
+            number += static_cast<char>(c);
             while (IsNumber(i_->peek())) {
-                char ch = i_->get();
-                number += ch;
+                number += static_cast<char>(i_->get());
             }
             return ConstantToken{std::stoi(number)};
         } else if (IsSymbol(c)) {
             std::string name;
-            name += c;
+            name += static_cast<char>(c);
             while (IsSymbol(i_->peek()) || IsNumber(i_->peek())) {
-                char ch = i_->get();
-                name += ch;
+                name += static_cast<char>(i_->get());
             }
             return SymbolToken{name};
         } else {
