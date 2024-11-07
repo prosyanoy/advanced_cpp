@@ -93,7 +93,6 @@ BooleanTrue::BooleanTrue() : RealBoolean(true) {
 BooleanFalse::BooleanFalse() : RealBoolean(false) {
 }
 
-
 //////////////////// Integers
 //////// IntegerPredicate
 IntegerPredicate::IntegerPredicate() : Symbol("number?") {

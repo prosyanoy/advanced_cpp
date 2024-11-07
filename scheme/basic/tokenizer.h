@@ -52,8 +52,7 @@ struct ConstantToken {
     }
 };
 
-using Token =
-    std::variant<ConstantToken, BracketToken, SymbolToken, QuoteToken, DotToken,
+using Token = std::variant<ConstantToken, BracketToken, SymbolToken, QuoteToken, DotToken,
                  TrueToken, FalseToken, EmptyToken>;
 
 class Tokenizer {
