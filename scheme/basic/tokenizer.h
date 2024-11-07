@@ -53,7 +53,7 @@ struct ConstantToken {
 };
 
 using Token = std::variant<ConstantToken, BracketToken, SymbolToken, QuoteToken, DotToken,
-                 TrueToken, FalseToken, EmptyToken>;
+                           TrueToken, FalseToken, EmptyToken>;
 
 class Tokenizer {
     std::istream* i_;
