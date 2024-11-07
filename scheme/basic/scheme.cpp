@@ -54,7 +54,6 @@ std::string Interpreter::PrintList(std::shared_ptr<Object> obj) {
     return result;
 }
 
-
 std::string Interpreter::PrintInteger(std::shared_ptr<Object> obj) {
     return std::to_string(As<Number>(obj)->GetValue());
 }

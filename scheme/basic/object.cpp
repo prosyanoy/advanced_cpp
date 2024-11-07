@@ -121,7 +121,7 @@ IntegerEqual::IntegerEqual() : Symbol("=") {
 
 std::shared_ptr<Object> IntegerEqual::Do(std::shared_ptr<Object> args, bool) {
     if (!args) {
-        return std::make_shared<BooleanTrue>(); // No arguments, return true
+        return std::make_shared<BooleanTrue>();
     }
 
     if (!Is<Cell>(args)) {
@@ -161,7 +161,7 @@ IntegerMore::IntegerMore() : Symbol(">") {
 
 std::shared_ptr<Object> IntegerMore::Do(std::shared_ptr<Object> args, bool) {
     if (!args) {
-        return std::make_shared<BooleanTrue>(); // No arguments, return true
+        return std::make_shared<BooleanTrue>();
     }
 
     if (!Is<Cell>(args)) {

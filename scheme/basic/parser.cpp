@@ -110,9 +110,6 @@ std::shared_ptr<Object> ReadList(Tokenizer* tokenizer) {
     }
 
     auto first = Read(tokenizer);
-/*    if (Is<Quote>(first) && As<Quote>(first)->IsSymbol()) {
-        return ReadList(tokenizer);
-    }*/
     auto root = std::make_shared<Cell>();
     root->SetFirst(first);
     if (tokenizer->IsEnd()) {
