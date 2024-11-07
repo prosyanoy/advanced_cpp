@@ -1,5 +1,6 @@
 #include <object.h>
 #include <algorithm>
+#include <limits>
 
 std::shared_ptr<Object> Evaluate(std::shared_ptr<Object> obj) {
     if (!obj) {
@@ -50,7 +51,7 @@ std::shared_ptr<Object> InvalidSymbol::Do(std::shared_ptr<Object>, bool) {
 }
 //////////////////// Quote
 
-Quote::Quote(bool IsSymbol) : Symbol("quote"), is_symbol_(IsSymbol) {
+Quote::Quote(bool is_symbol) : Symbol("quote"), is_symbol_(is_symbol) {
 }
 
 std::shared_ptr<Object> Quote::Do(std::shared_ptr<Object> args, bool) {
@@ -578,13 +579,12 @@ std::shared_ptr<Object> BooleanAnd::Do(std::shared_ptr<Object> args, bool) {
         if (Is<BooleanFalse>(arg)) {
             return arg;
         }
-        // If this is the last argument, return its value
         if (!cell->GetSecond()) {
             return arg;
         }
         args = cell->GetSecond();
     }
-    return std::make_shared<BooleanTrue>(); // Should not reach here
+    return std::make_shared<BooleanTrue>();
 }
 
 //////// BooleanOr
@@ -613,13 +613,10 @@ std::shared_ptr<Object> BooleanOr::Do(std::shared_ptr<Object> args, bool) {
 PairPredicate::PairPredicate() : Symbol("pair?") {
 }
 std::shared_ptr<Object> PairPredicate::Do(std::shared_ptr<Object> args, bool) {
-    // Проверка количества аргументов
     if (!args || !Is<Cell>(args) || As<Cell>(args)->GetSecond()) {
         throw RuntimeError("pair? expects exactly one argument");
     }
-    // Оценка аргумента
     auto arg = Evaluate(As<Cell>(args)->GetFirst());
-    // Проверка, является ли аргумент парой (Cell)
     if (Is<Cell>(arg)) {
         return std::make_shared<BooleanTrue>();
     } else {
@@ -636,7 +633,6 @@ std::shared_ptr<Object> NullPredicate::Do(std::shared_ptr<Object> args, bool) {
         throw RuntimeError("null? expects exactly one argument");
     }
     auto arg = Evaluate(As<Cell>(args)->GetFirst());
-    // Проверяем, является ли аргумент пустым списком (nullptr)
     if (!arg) {
         return std::make_shared<BooleanTrue>();
     } else {
@@ -722,9 +718,8 @@ List::List() : Symbol("list") {
 
 std::shared_ptr<Object> List::Do(std::shared_ptr<Object> args, bool) {
     if (!args) {
-        return nullptr; // Пустой список
+        return nullptr;
     }
-    // Построение списка из аргументов
     auto head = std::make_shared<Cell>();
     auto current_cell = head;
     auto rest = args;
@@ -752,7 +747,6 @@ ListRef::ListRef() : Symbol("list-ref") {
 }
 
 std::shared_ptr<Object> ListRef::Do(std::shared_ptr<Object> args, bool) {
-    // Ожидает два аргумента: список и индекс
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("list-ref expects exactly two arguments");
     }
@@ -789,7 +783,6 @@ ListTail::ListTail() : Symbol("list-tail") {
 }
 
 std::shared_ptr<Object> ListTail::Do(std::shared_ptr<Object> args, bool) {
-    // Ожидает два аргумента: список и индекс
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("list-tail expects exactly two arguments");
     }
@@ -815,7 +808,6 @@ std::shared_ptr<Object> ListTail::Do(std::shared_ptr<Object> args, bool) {
         current = As<Cell>(current)->GetSecond();
         --index;
     }
-    // Возвращаем оставшуюся часть списка
     return current;
 }
 
