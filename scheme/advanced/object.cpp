@@ -82,8 +82,7 @@ const std::string& Symbol::GetName() const {
 Variable::Variable(std::string name) : Symbol(name) {
 }
 
-std::shared_ptr<Object> Variable::Do(std::shared_ptr<Object>,
-    std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Variable::Do(std::shared_ptr<Object>, std::shared_ptr<Environment> env) {
     throw NameError("Not a valid operation");
 }
 //////////////////// Quote
@@ -91,8 +90,7 @@ std::shared_ptr<Object> Variable::Do(std::shared_ptr<Object>,
 Quote::Quote(bool is_symbol) : Symbol("quote"), is_symbol_(is_symbol) {
 }
 
-std::shared_ptr<Object> Quote::Do(std::shared_ptr<Object> args,
-                                  std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Quote::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
     if (IsSymbol()) {
         if (!args || !Is<Cell>(args)) {
             throw SyntaxError("Syntax error in quote");
@@ -722,8 +720,7 @@ std::shared_ptr<Object> ListPredicate::Do(std::shared_ptr<Object> args,
 Cons::Cons() : Symbol("cons") {
 }
 
-std::shared_ptr<Object> Cons::Do(std::shared_ptr<Object> args,
-                                 std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Cons::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("cons expects exactly two arguments");
     }
@@ -744,8 +741,7 @@ std::shared_ptr<Object> Cons::Do(std::shared_ptr<Object> args,
 Car::Car() : Symbol("car") {
 }
 
-std::shared_ptr<Object> Car::Do(std::shared_ptr<Object> args,
-                                std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Car::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args) || As<Cell>(args)->GetSecond()) {
         throw RuntimeError("car expects exactly one argument");
     }
@@ -760,8 +756,7 @@ std::shared_ptr<Object> Car::Do(std::shared_ptr<Object> args,
 Cdr::Cdr() : Symbol("cdr") {
 }
 
-std::shared_ptr<Object> Cdr::Do(std::shared_ptr<Object> args,
-                                std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Cdr::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args) || As<Cell>(args)->GetSecond()) {
         throw RuntimeError("cdr expects exactly one argument");
     }
@@ -776,8 +771,7 @@ std::shared_ptr<Object> Cdr::Do(std::shared_ptr<Object> args,
 List::List() : Symbol("list") {
 }
 
-std::shared_ptr<Object> List::Do(std::shared_ptr<Object> args,
-                                 std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> List::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
     if (!args) {
         return nullptr;
     }
@@ -878,8 +872,7 @@ std::shared_ptr<Object> ListTail::Do(std::shared_ptr<Object> args,
 If::If() : Symbol("if") {
 }
 
-std::shared_ptr<Object> If::Do(std::shared_ptr<Object> args,
-                               std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> If::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw SyntaxError("if expects two or three arguments");
     }
@@ -919,8 +912,7 @@ std::shared_ptr<Object> If::Do(std::shared_ptr<Object> args,
 Define::Define() : Symbol("define") {
 }
 
-std::shared_ptr<Object> Define::Do(std::shared_ptr<Object> args,
-                                   std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Define::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw SyntaxError("define expects more than 1 argument");
     }
@@ -986,8 +978,7 @@ std::shared_ptr<Object> Define::Do(std::shared_ptr<Object> args,
 Set::Set() : Symbol("set!") {
 }
 
-std::shared_ptr<Object> Set::Do(std::shared_ptr<Object> args,
-                                std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Set::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw SyntaxError("set! expects exactly two arguments");
     }
@@ -1010,8 +1001,7 @@ std::shared_ptr<Object> Set::Do(std::shared_ptr<Object> args,
 SetCar::SetCar() : Symbol("set-car!") {
 }
 
-std::shared_ptr<Object> SetCar::Do(std::shared_ptr<Object> args,
-                                   std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> SetCar::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("set-car! expects exactly two arguments");
     }
@@ -1035,8 +1025,7 @@ std::shared_ptr<Object> SetCar::Do(std::shared_ptr<Object> args,
 SetCdr::SetCdr() : Symbol("set-cdr!") {
 }
 
-std::shared_ptr<Object> SetCdr::Do(std::shared_ptr<Object> args,
-                                   std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> SetCdr::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("set-car! expects exactly two arguments");
     }

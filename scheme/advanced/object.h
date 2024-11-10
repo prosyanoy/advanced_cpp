@@ -68,7 +68,8 @@ public:
 class Variable : public Symbol {
 public:
     Variable(std::string name);
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
+                                       std::shared_ptr<Environment>) override;
 };
 
 class Quote : public Symbol {
@@ -77,7 +78,8 @@ class Quote : public Symbol {
 public:
     Quote(bool);
     bool IsSymbol();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
+                                       std::shared_ptr<Environment>) override;
 };
 
 class IntegerPredicate : public Symbol {
@@ -223,25 +225,29 @@ public:
 class Cons : public Symbol {
 public:
     Cons();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
+                                       std::shared_ptr<Environment>) override;
 };
 
 class Car : public Symbol {
 public:
     Car();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
+                                       std::shared_ptr<Environment>) override;
 };
 
 class Cdr : public Symbol {
 public:
     Cdr();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
+                                       std::shared_ptr<Environment>) override;
 };
 
 class List : public Symbol {
 public:
     List();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
+                                       std::shared_ptr<Environment>) override;
 };
 
 class ListRef : public Symbol {
@@ -261,31 +267,36 @@ public:
 class If : public Symbol {
 public:
     If();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
+                                       std::shared_ptr<Environment>) override;
 };
 
 class Define : public Symbol {
 public:
     Define();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
+                                       std::shared_ptr<Environment>) override;
 };
 
 class Set : public Symbol {
 public:
     Set();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
+                                       std::shared_ptr<Environment>) override;
 };
 
 class SetCar : public Symbol {
 public:
     SetCar();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
+                                       std::shared_ptr<Environment>) override;
 };
 
 class SetCdr : public Symbol {
 public:
     SetCdr();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
+                                       std::shared_ptr<Environment>) override;
 };
 
 class SymbolPredicate : public Symbol {
