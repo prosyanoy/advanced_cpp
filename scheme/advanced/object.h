@@ -317,10 +317,10 @@ class MyLambda : public Symbol {
     std::vector<std::string> vars_;
     std::vector<std::shared_ptr<Object>> ops_;
     std::shared_ptr<Environment> closure_env_;
+
 public:
     MyLambda(const std::vector<std::string>& variables,
-             const std::vector<std::shared_ptr<Object>>& ops,
-             std::shared_ptr<Environment> env,
+             const std::vector<std::shared_ptr<Object>>& ops, std::shared_ptr<Environment> env,
              std::string name);
     virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
                                        std::shared_ptr<Environment>) override;
