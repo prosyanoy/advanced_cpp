@@ -82,7 +82,8 @@ const std::string& Symbol::GetName() const {
 Variable::Variable(std::string name) : Symbol(name) {
 }
 
-std::shared_ptr<Object> Variable::Do(std::shared_ptr<Object>, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Variable::Do(std::shared_ptr<Object>,
+    std::shared_ptr<Environment> env) {
     throw NameError("Not a valid operation");
 }
 //////////////////// Quote
@@ -90,7 +91,8 @@ std::shared_ptr<Object> Variable::Do(std::shared_ptr<Object>, std::shared_ptr<En
 Quote::Quote(bool is_symbol) : Symbol("quote"), is_symbol_(is_symbol) {
 }
 
-std::shared_ptr<Object> Quote::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Quote::Do(std::shared_ptr<Object> args,
+                                  std::shared_ptr<Environment> env) {
     if (IsSymbol()) {
         if (!args || !Is<Cell>(args)) {
             throw SyntaxError("Syntax error in quote");
@@ -134,7 +136,8 @@ BooleanFalse::BooleanFalse() : RealBoolean(false) {
 IntegerPredicate::IntegerPredicate() : Symbol("number?") {
 }
 
-std::shared_ptr<Object> IntegerPredicate::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerPredicate::Do(std::shared_ptr<Object> args,
+                                             std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("Invalid arguments");
     }
@@ -154,7 +157,8 @@ std::shared_ptr<Object> IntegerPredicate::Do(std::shared_ptr<Object> args, std::
 IntegerEqual::IntegerEqual() : Symbol("=") {
 }
 
-std::shared_ptr<Object> IntegerEqual::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerEqual::Do(std::shared_ptr<Object> args,
+                                         std::shared_ptr<Environment> env) {
     if (!args) {
         return std::make_shared<BooleanTrue>();
     }
@@ -194,7 +198,8 @@ std::shared_ptr<Object> IntegerEqual::Do(std::shared_ptr<Object> args, std::shar
 IntegerMore::IntegerMore() : Symbol(">") {
 }
 
-std::shared_ptr<Object> IntegerMore::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerMore::Do(std::shared_ptr<Object> args,
+                                        std::shared_ptr<Environment> env) {
     if (!args) {
         return std::make_shared<BooleanTrue>();
     }
@@ -235,7 +240,8 @@ std::shared_ptr<Object> IntegerMore::Do(std::shared_ptr<Object> args, std::share
 IntegerLess::IntegerLess() : Symbol("<") {
 }
 
-std::shared_ptr<Object> IntegerLess::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerLess::Do(std::shared_ptr<Object> args,
+                                        std::shared_ptr<Environment> env) {
     if (!args) {
         return std::make_shared<BooleanTrue>();
     }
@@ -277,7 +283,8 @@ std::shared_ptr<Object> IntegerLess::Do(std::shared_ptr<Object> args, std::share
 IntegerMoreEqual::IntegerMoreEqual() : Symbol(">=") {
 }
 
-std::shared_ptr<Object> IntegerMoreEqual::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerMoreEqual::Do(std::shared_ptr<Object> args,
+                                             std::shared_ptr<Environment> env) {
     if (!args) {
         return std::make_shared<BooleanTrue>();
     }
@@ -318,7 +325,8 @@ std::shared_ptr<Object> IntegerMoreEqual::Do(std::shared_ptr<Object> args, std::
 IntegerLessEqual::IntegerLessEqual() : Symbol("<=") {
 }
 
-std::shared_ptr<Object> IntegerLessEqual::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerLessEqual::Do(std::shared_ptr<Object> args,
+                                             std::shared_ptr<Environment> env) {
     if (!args) {
         return std::make_shared<BooleanTrue>();
     }
@@ -359,7 +367,8 @@ std::shared_ptr<Object> IntegerLessEqual::Do(std::shared_ptr<Object> args, std::
 IntegerPlus::IntegerPlus() : Symbol("+") {
 }
 
-std::shared_ptr<Object> IntegerPlus::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerPlus::Do(std::shared_ptr<Object> args,
+                                        std::shared_ptr<Environment> env) {
     int sum = 0;
     while (args) {
         if (!Is<Cell>(args)) {
@@ -380,7 +389,8 @@ std::shared_ptr<Object> IntegerPlus::Do(std::shared_ptr<Object> args, std::share
 IntegerMinus::IntegerMinus() : Symbol("-") {
 }
 
-std::shared_ptr<Object> IntegerMinus::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerMinus::Do(std::shared_ptr<Object> args,
+                                         std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("Invalid arguments");
     }
@@ -417,7 +427,8 @@ std::shared_ptr<Object> IntegerMinus::Do(std::shared_ptr<Object> args, std::shar
 IntegerMultiply::IntegerMultiply() : Symbol("*") {
 }
 
-std::shared_ptr<Object> IntegerMultiply::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerMultiply::Do(std::shared_ptr<Object> args,
+                                            std::shared_ptr<Environment> env) {
     int product = 1;
     while (args) {
         if (!Is<Cell>(args)) {
@@ -438,7 +449,8 @@ std::shared_ptr<Object> IntegerMultiply::Do(std::shared_ptr<Object> args, std::s
 IntegerDivide::IntegerDivide() : Symbol("/") {
 }
 
-std::shared_ptr<Object> IntegerDivide::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerDivide::Do(std::shared_ptr<Object> args,
+                                          std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("Invalid arguments");
     }
@@ -482,7 +494,8 @@ std::shared_ptr<Object> IntegerDivide::Do(std::shared_ptr<Object> args, std::sha
 IntegerMax::IntegerMax() : Symbol("max") {
 }
 
-std::shared_ptr<Object> IntegerMax::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerMax::Do(std::shared_ptr<Object> args,
+                                       std::shared_ptr<Environment> env) {
     if (!args) {
         throw RuntimeError("max requires at least one argument");
     }
@@ -510,7 +523,8 @@ std::shared_ptr<Object> IntegerMax::Do(std::shared_ptr<Object> args, std::shared
 IntegerMin::IntegerMin() : Symbol("min") {
 }
 
-std::shared_ptr<Object> IntegerMin::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerMin::Do(std::shared_ptr<Object> args,
+                                       std::shared_ptr<Environment> env) {
     if (!args) {
         throw RuntimeError("min requires at least one argument");
     }
@@ -539,7 +553,8 @@ std::shared_ptr<Object> IntegerMin::Do(std::shared_ptr<Object> args, std::shared
 IntegerAbs::IntegerAbs() : Symbol("abs") {
 }
 
-std::shared_ptr<Object> IntegerAbs::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> IntegerAbs::Do(std::shared_ptr<Object> args,
+                                       std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("Invalid arguments");
     }
@@ -561,7 +576,8 @@ std::shared_ptr<Object> IntegerAbs::Do(std::shared_ptr<Object> args, std::shared
 BooleanPredicate::BooleanPredicate() : Symbol("boolean?") {
 }
 
-std::shared_ptr<Object> BooleanPredicate::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> BooleanPredicate::Do(std::shared_ptr<Object> args,
+                                             std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("Invalid arguments");
     }
@@ -581,7 +597,8 @@ std::shared_ptr<Object> BooleanPredicate::Do(std::shared_ptr<Object> args, std::
 BooleanNot::BooleanNot() : Symbol("not") {
 }
 
-std::shared_ptr<Object> BooleanNot::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> BooleanNot::Do(std::shared_ptr<Object> args,
+                                       std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("Invalid arguments");
     }
@@ -601,7 +618,8 @@ std::shared_ptr<Object> BooleanNot::Do(std::shared_ptr<Object> args, std::shared
 BooleanAnd::BooleanAnd() : Symbol("and") {
 }
 
-std::shared_ptr<Object> BooleanAnd::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> BooleanAnd::Do(std::shared_ptr<Object> args,
+                                       std::shared_ptr<Environment> env) {
     if (!args) {
         return std::make_shared<BooleanTrue>();
     }
@@ -626,7 +644,8 @@ std::shared_ptr<Object> BooleanAnd::Do(std::shared_ptr<Object> args, std::shared
 BooleanOr::BooleanOr() : Symbol("or") {
 }
 
-std::shared_ptr<Object> BooleanOr::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> BooleanOr::Do(std::shared_ptr<Object> args,
+                                      std::shared_ptr<Environment> env) {
     if (!args) {
         return std::make_shared<BooleanFalse>();
     }
@@ -647,7 +666,8 @@ std::shared_ptr<Object> BooleanOr::Do(std::shared_ptr<Object> args, std::shared_
 //////// PairPredicate
 PairPredicate::PairPredicate() : Symbol("pair?") {
 }
-std::shared_ptr<Object> PairPredicate::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> PairPredicate::Do(std::shared_ptr<Object> args,
+                                          std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args) || As<Cell>(args)->GetSecond()) {
         throw RuntimeError("pair? expects exactly one argument");
     }
@@ -663,7 +683,8 @@ std::shared_ptr<Object> PairPredicate::Do(std::shared_ptr<Object> args, std::sha
 NullPredicate::NullPredicate() : Symbol("null?") {
 }
 
-std::shared_ptr<Object> NullPredicate::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> NullPredicate::Do(std::shared_ptr<Object> args,
+                                          std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args) || As<Cell>(args)->GetSecond()) {
         throw RuntimeError("null? expects exactly one argument");
     }
@@ -679,7 +700,8 @@ std::shared_ptr<Object> NullPredicate::Do(std::shared_ptr<Object> args, std::sha
 ListPredicate::ListPredicate() : Symbol("list?") {
 }
 
-std::shared_ptr<Object> ListPredicate::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> ListPredicate::Do(std::shared_ptr<Object> args,
+                                          std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args) || As<Cell>(args)->GetSecond()) {
         throw RuntimeError("list? expects exactly one argument");
     }
@@ -700,7 +722,8 @@ std::shared_ptr<Object> ListPredicate::Do(std::shared_ptr<Object> args, std::sha
 Cons::Cons() : Symbol("cons") {
 }
 
-std::shared_ptr<Object> Cons::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Cons::Do(std::shared_ptr<Object> args,
+                                 std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("cons expects exactly two arguments");
     }
@@ -721,7 +744,8 @@ std::shared_ptr<Object> Cons::Do(std::shared_ptr<Object> args, std::shared_ptr<E
 Car::Car() : Symbol("car") {
 }
 
-std::shared_ptr<Object> Car::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Car::Do(std::shared_ptr<Object> args,
+                                std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args) || As<Cell>(args)->GetSecond()) {
         throw RuntimeError("car expects exactly one argument");
     }
@@ -736,7 +760,8 @@ std::shared_ptr<Object> Car::Do(std::shared_ptr<Object> args, std::shared_ptr<En
 Cdr::Cdr() : Symbol("cdr") {
 }
 
-std::shared_ptr<Object> Cdr::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Cdr::Do(std::shared_ptr<Object> args,
+                                std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args) || As<Cell>(args)->GetSecond()) {
         throw RuntimeError("cdr expects exactly one argument");
     }
@@ -751,7 +776,8 @@ std::shared_ptr<Object> Cdr::Do(std::shared_ptr<Object> args, std::shared_ptr<En
 List::List() : Symbol("list") {
 }
 
-std::shared_ptr<Object> List::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> List::Do(std::shared_ptr<Object> args,
+                                 std::shared_ptr<Environment> env) {
     if (!args) {
         return nullptr;
     }
@@ -781,7 +807,8 @@ std::shared_ptr<Object> List::Do(std::shared_ptr<Object> args, std::shared_ptr<E
 ListRef::ListRef() : Symbol("list-ref") {
 }
 
-std::shared_ptr<Object> ListRef::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> ListRef::Do(std::shared_ptr<Object> args,
+                                    std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("list-ref expects exactly two arguments");
     }
@@ -817,7 +844,8 @@ std::shared_ptr<Object> ListRef::Do(std::shared_ptr<Object> args, std::shared_pt
 ListTail::ListTail() : Symbol("list-tail") {
 }
 
-std::shared_ptr<Object> ListTail::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> ListTail::Do(std::shared_ptr<Object> args,
+                                     std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("list-tail expects exactly two arguments");
     }
@@ -850,7 +878,8 @@ std::shared_ptr<Object> ListTail::Do(std::shared_ptr<Object> args, std::shared_p
 If::If() : Symbol("if") {
 }
 
-std::shared_ptr<Object> If::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> If::Do(std::shared_ptr<Object> args,
+                               std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw SyntaxError("if expects two or three arguments");
     }
@@ -890,7 +919,8 @@ std::shared_ptr<Object> If::Do(std::shared_ptr<Object> args, std::shared_ptr<Env
 Define::Define() : Symbol("define") {
 }
 
-std::shared_ptr<Object> Define::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Define::Do(std::shared_ptr<Object> args,
+                                   std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw SyntaxError("define expects more than 1 argument");
     }
@@ -956,7 +986,8 @@ std::shared_ptr<Object> Define::Do(std::shared_ptr<Object> args, std::shared_ptr
 Set::Set() : Symbol("set!") {
 }
 
-std::shared_ptr<Object> Set::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> Set::Do(std::shared_ptr<Object> args,
+                                std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw SyntaxError("set! expects exactly two arguments");
     }
@@ -979,7 +1010,8 @@ std::shared_ptr<Object> Set::Do(std::shared_ptr<Object> args, std::shared_ptr<En
 SetCar::SetCar() : Symbol("set-car!") {
 }
 
-std::shared_ptr<Object> SetCar::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> SetCar::Do(std::shared_ptr<Object> args,
+                                   std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("set-car! expects exactly two arguments");
     }
@@ -1003,7 +1035,8 @@ std::shared_ptr<Object> SetCar::Do(std::shared_ptr<Object> args, std::shared_ptr
 SetCdr::SetCdr() : Symbol("set-cdr!") {
 }
 
-std::shared_ptr<Object> SetCdr::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> SetCdr::Do(std::shared_ptr<Object> args,
+                                   std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("set-car! expects exactly two arguments");
     }
@@ -1027,7 +1060,8 @@ std::shared_ptr<Object> SetCdr::Do(std::shared_ptr<Object> args, std::shared_ptr
 SymbolPredicate::SymbolPredicate() : Symbol("symbol?") {
 }
 
-std::shared_ptr<Object> SymbolPredicate::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> SymbolPredicate::Do(std::shared_ptr<Object> args,
+                                            std::shared_ptr<Environment> env) {
     if (!args || !Is<Cell>(args)) {
         throw RuntimeError("Invalid arguments");
     }
@@ -1087,11 +1121,14 @@ std::shared_ptr<Object> Lambda::Do(std::shared_ptr<Object> args, std::shared_ptr
 }
 
 //////// MyLambda
-MyLambda::MyLambda(const std::vector<std::string>& variables, const std::vector<std::shared_ptr<Object>>& ops, std::shared_ptr<Environment> env, std::string name = "")
+MyLambda::MyLambda(const std::vector<std::string>& variables,
+                   const std::vector<std::shared_ptr<Object>>& ops,
+                   std::shared_ptr<Environment> env, std::string name = "")
     : Symbol(name), vars_(variables), ops_(ops), closure_env_(env) {
 }
 
-std::shared_ptr<Object> MyLambda::Do(std::shared_ptr<Object> args, std::shared_ptr<Environment> env) {
+std::shared_ptr<Object> MyLambda::Do(std::shared_ptr<Object> args,
+                                     std::shared_ptr<Environment> env) {
     auto local_env = std::make_shared<Environment>(closure_env_);
 
     auto arg_list = args;
@@ -1114,7 +1151,6 @@ std::shared_ptr<Object> MyLambda::Do(std::shared_ptr<Object> args, std::shared_p
     }
     return result;
 }
-
 
 //////////////////// Cell
 Cell::Cell() : first_(nullptr), second_(nullptr) {
