@@ -31,8 +31,7 @@ class Symbol : public Object {
 public:
     Symbol(std::string name);
     const std::string& GetName() const;
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
-                                       std::shared_ptr<Environment>) = 0;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) = 0;
 };
 
 class Boolean : public Object {
@@ -69,8 +68,7 @@ public:
 class Variable : public Symbol {
 public:
     Variable(std::string name);
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
-                                       std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
 };
 
 class Quote : public Symbol {
@@ -79,8 +77,7 @@ class Quote : public Symbol {
 public:
     Quote(bool);
     bool IsSymbol();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
-                                       std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
 };
 
 class IntegerPredicate : public Symbol {
@@ -226,29 +223,25 @@ public:
 class Cons : public Symbol {
 public:
     Cons();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
-                                       std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
 };
 
 class Car : public Symbol {
 public:
     Car();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
-                                       std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
 };
 
 class Cdr : public Symbol {
 public:
     Cdr();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
-                                       std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
 };
 
 class List : public Symbol {
 public:
     List();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
-                                       std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
 };
 
 class ListRef : public Symbol {
@@ -268,36 +261,31 @@ public:
 class If : public Symbol {
 public:
     If();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
-                                       std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
 };
 
 class Define : public Symbol {
 public:
     Define();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
-                                       std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
 };
 
 class Set : public Symbol {
 public:
     Set();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
-                                       std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
 };
 
 class SetCar : public Symbol {
 public:
     SetCar();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
-                                       std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
 };
 
 class SetCdr : public Symbol {
 public:
     SetCdr();
-    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
-                                       std::shared_ptr<Environment>) override;
+    virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>, std::shared_ptr<Environment>) override;
 };
 
 class SymbolPredicate : public Symbol {
@@ -319,7 +307,10 @@ class MyLambda : public Symbol {
     std::vector<std::shared_ptr<Object>> ops_;
     std::shared_ptr<Environment> closure_env_;
 public:
-    MyLambda(const std::vector<std::string>& variables, const std::vector<std::shared_ptr<Object>>& ops, std::shared_ptr<Environment> env, std::string name);
+    MyLambda(const std::vector<std::string>& variables,
+             const std::vector<std::shared_ptr<Object>>& ops,
+             std::shared_ptr<Environment> env,
+             std::string name);
     virtual std::shared_ptr<Object> Do(std::shared_ptr<Object>,
                                        std::shared_ptr<Environment>) override;
 };
