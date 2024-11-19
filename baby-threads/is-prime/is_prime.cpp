@@ -29,7 +29,8 @@ bool is_prime(uint64_t x) {
             }
         });
     }
-    for (auto& t : threads) t.join();
+    for (auto& t : threads)
+        t.join();
     return flag.load();
 }
 
