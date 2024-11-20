@@ -48,7 +48,7 @@ public:
     }
 
     bool Insert(const K& key, const V& value) {
-        if (Size() > table_.size()) {
+        {
             std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
             if (Size() > table_.size()) {
                 ReHash();
@@ -86,6 +86,7 @@ public:
     }
 
     void Clear() {
+        std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
         for (auto& lock : locks_) {
             lock.lock();
         }
@@ -98,6 +99,11 @@ public:
     }
 
     std::pair<bool, V> Find(const K& key) const {
+        {
+            std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
+            // Блокируем во избежание состояния гонки с ReHash
+        }
+
         size_t idx_lock = hasher_(key) % lock_size_;
         std::lock_guard<std::mutex> lock(locks_[idx_lock]);
 
@@ -112,6 +118,11 @@ public:
     }
 
     const V At(const K& key) const {
+        {
+            std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
+            // Блокируем во избежание состояния гонки с ReHash
+        }
+
         size_t idx_lock = hasher_(key) % lock_size_;
         std::lock_guard<std::mutex> lock(locks_[idx_lock]);
 
