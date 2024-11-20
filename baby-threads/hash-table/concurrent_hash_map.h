@@ -20,13 +20,13 @@ public:
     ConcurrentHashMap(int expected_size, int expected_threads_count, const Hash& hasher = Hash())
         : size_(0), hasher_(hasher) {
         if (expected_size != kUndefinedSize) {
-            N = 2 * expected_size;
+            bucket_size_ = 2 * expected_size;
         } else {
-            N = expected_threads_count * 100;
+            bucket_size_ = expected_threads_count * 100;
         }
-        LockSize = N;
-        locks_ = std::vector<std::mutex>(LockSize);
-        table_ = std::vector<std::list<Pair>>(N);
+        lock_size_ = bucket_size_;
+        locks_ = std::vector<std::mutex>(lock_size_);
+        table_ = std::vector<std::list<Pair>>(bucket_size_);
     }
 
     void ReHash() {
@@ -35,12 +35,12 @@ public:
         for (auto& lock : locks_) {
             lock_guards.emplace_back(lock);
         }
-        N *= 2;
-        table_.resize(N);
-        for (int i = 0; i < N / 2; ++i) {
+        bucket_size_ *= 2;
+        table_.resize(bucket_size_);
+        for (int i = 0; i < bucket_size_ / 2; ++i) {
             auto& l = table_[i];
             for (auto it = l.begin(); it != l.end();) {
-                int h = hasher_(it->key) % N;
+                int h = hasher_(it->key) % bucket_size_;
                 if (i != h) {
                     table_[h].push_back(*it);
                     it = l.erase(it);
@@ -62,8 +62,8 @@ public:
             }
         }
 
-        size_t idx_lock = hasher_(key) % LockSize;
-        size_t h = hasher_(key) % N;
+        size_t idx_lock = hasher_(key) % lock_size_;
+        size_t h = hasher_(key) % bucket_size_;
         std::lock_guard<std::mutex> lock(locks_[idx_lock]);
         auto& l = table_[h];
         for (auto it = l.begin(); it != l.end(); ++it) {
@@ -78,8 +78,8 @@ public:
     }
 
     bool Erase(const K& key) {
-        size_t idx_lock = hasher_(key) % LockSize;
-        size_t h = hasher_(key) % N;
+        size_t idx_lock = hasher_(key) % lock_size_;
+        size_t h = hasher_(key) % bucket_size_;
         locks_[idx_lock].lock();
         auto& l = table_[h];
         auto it = std::find_if(l.begin(), l.end(), [&](const Pair& p) { return p.key == key; });
@@ -105,10 +105,10 @@ public:
     }
 
     std::pair<bool, V> Find(const K& key) const {
-        size_t idx_lock = hasher_(key) % LockSize;
+        size_t idx_lock = hasher_(key) % lock_size_;
         std::lock_guard<std::mutex> lock(locks_[idx_lock]);
 
-        size_t h = hasher_(key) % N;
+        size_t h = hasher_(key) % bucket_size_;
         const auto& l = table_[h];
         for (const auto& pair : l) {
             if (pair.key == key) {
@@ -119,8 +119,8 @@ public:
     }
 
     const V At(const K& key) const {
-        size_t h = hasher_(key) % N;
-        size_t idx_lock = hasher_(key) % LockSize;
+        size_t h = hasher_(key) % bucket_size_;
+        size_t idx_lock = hasher_(key) % lock_size_;
         locks_[idx_lock].lock();
         const auto& l = table_[h];
         for (const auto& pair : l) {
@@ -149,8 +149,8 @@ private:
     std::vector<std::list<Pair>> table_;
     mutable std::vector<std::mutex> locks_;
     std::mutex rehash_mutex_;
-    size_t LockSize;
-    size_t N;
+    size_t lock_size_;
+    size_t bucket_size_;
     std::atomic<size_t> size_;
     Hash hasher_;
 };
