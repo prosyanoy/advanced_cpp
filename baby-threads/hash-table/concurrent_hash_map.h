@@ -17,7 +17,8 @@ public:
         : ConcurrentHashMap(expected_size, kDefaultConcurrencyLevel, hasher) {
     }
 
-    ConcurrentHashMap(int expected_size, int expected_threads_count, const Hash& hasher = Hash()) : size_(0), hasher_(hasher){
+    ConcurrentHashMap(int expected_size, int expected_threads_count, const Hash& hasher = Hash())
+        : size_(0), hasher_(hasher){
         if (expected_size != kUndefinedSize) {
             N = 2 * expected_size;
         } else {
@@ -132,7 +133,6 @@ public:
         throw std::out_of_range("No such key");
     }
 
-
     size_t Size() const {
         return size_;
     }
@@ -154,7 +154,6 @@ private:
     std::atomic<size_t> size_;
     Hash hasher_;
 };
-
 
 template <class K, class V, class Hash>
 const int ConcurrentHashMap<K, V, Hash>::kDefaultConcurrencyLevel = 8;
