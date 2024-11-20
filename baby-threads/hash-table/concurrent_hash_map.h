@@ -18,7 +18,7 @@ public:
     }
 
     ConcurrentHashMap(int expected_size, int expected_threads_count, const Hash& hasher = Hash())
-        : size_(0), hasher_(hasher){
+        : size_(0), hasher_(hasher) {
         if (expected_size != kUndefinedSize) {
             N = 2 * expected_size;
         } else {
