@@ -50,7 +50,7 @@ public:
     bool Insert(const K& key, const V& value) {
         {
             std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
-            if (Size() > table_.size()) {
+            if (Size() > 4 * table_.size()) {
                 ReHash();
             }
         }
@@ -159,7 +159,7 @@ private:
 };
 
 template <class K, class V, class Hash>
-const int ConcurrentHashMap<K, V, Hash>::kDefaultConcurrencyLevel = 8;
+const int ConcurrentHashMap<K, V, Hash>::kDefaultConcurrencyLevel = 64;
 
 template <class K, class V, class Hash>
 const int ConcurrentHashMap<K, V, Hash>::kUndefinedSize = -1;
