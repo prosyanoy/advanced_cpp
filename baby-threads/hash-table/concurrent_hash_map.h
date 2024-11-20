@@ -35,11 +35,10 @@ public:
         {
             std::lock_guard<std::mutex> lock(locks_[idx_lock]);
 
-            // Lock rehash_mutex_ after acquiring locks_[idx_lock]
             std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
 
             if (size_.load(std::memory_order_relaxed) > table_.size() * kMaxLoadFactor) {
-                ReHash(); // Rehashing with locks held in correct order
+                ReHash();
             }
 
             size_t h = hasher_(key) % bucket_size_;
@@ -71,19 +70,16 @@ public:
     }
 
     void Clear() {
-        // First, lock all locks in locks_
         for (auto& lock : locks_) {
             lock.lock();
         }
 
-        // Then, lock rehash_mutex_
         std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
 
         table_.clear();
         table_.resize(bucket_size_);
         size_ = 0;
 
-        // Unlock locks in reverse order
         for (auto it = locks_.rbegin(); it != locks_.rend(); ++it) {
             it->unlock();
         }
@@ -93,7 +89,6 @@ public:
         size_t idx_lock = hasher_(key) % lock_size_;
         std::lock_guard<std::mutex> lock(locks_[idx_lock]);
 
-        // Lock rehash_mutex_ after acquiring locks_[idx_lock]
         std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
 
         size_t h = hasher_(key) % bucket_size_;
@@ -137,14 +132,12 @@ private:
     };
 
     void ReHash() {
-        // First, lock all locks in locks_
         std::vector<std::unique_lock<std::mutex>> lock_guards;
         lock_guards.reserve(locks_.size());
         for (auto& lock : locks_) {
             lock_guards.emplace_back(lock);
         }
 
-        // Then, lock rehash_mutex_
         std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
 
         bucket_size_ *= 2;
@@ -171,10 +164,10 @@ private:
 };
 
 template <class K, class V, class Hash>
-const int ConcurrentHashMap<K, V, Hash>::kDefaultConcurrencyLevel = 64; // Increased
+const int ConcurrentHashMap<K, V, Hash>::kDefaultConcurrencyLevel = 64;
 
 template <class K, class V, class Hash>
 const int ConcurrentHashMap<K, V, Hash>::kUndefinedSize = -1;
 
 template <class K, class V, class Hash>
-const int ConcurrentHashMap<K, V, Hash>::kMaxLoadFactor = 4; // New constant
+const int ConcurrentHashMap<K, V, Hash>::kMaxLoadFactor = 4;
