@@ -21,7 +21,7 @@ public:
     ConcurrentHashMap(int expected_size, int expected_threads_count, const Hash& hasher = Hash())
         : size_(0), hasher_(hasher) {
         if (expected_size != kUndefinedSize) {
-            bucket_size_ = 4 * expected_size; // Увеличен множитель для уменьшения частоты рехеширования
+            bucket_size_ = 4 * expected_size;
         } else {
             bucket_size_ = expected_threads_count * 100;
         }
@@ -31,8 +31,6 @@ public:
     }
 
     void ReHash() {
-        // Предполагается, что rehash_mutex_ уже захвачен
-        // Захватываем все locks_ в порядке
         std::vector<std::unique_lock<std::mutex>> lock_guards;
         lock_guards.reserve(locks_.size());
         for (auto& lock : locks_) {
@@ -91,7 +89,6 @@ public:
     void Clear() {
         std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
 
-        // Захватываем все locks_ в порядке
         std::vector<std::unique_lock<std::mutex>> lock_guards;
         lock_guards.reserve(locks_.size());
         for (auto& lock : locks_) {
@@ -101,7 +98,6 @@ public:
         table_.clear();
         table_.resize(bucket_size_);
         size_ = 0;
-        // Мьютексы автоматически освобождаются при выходе из области видимости
     }
 
     std::pair<bool, V> Find(const K& key) const {
@@ -159,7 +155,7 @@ private:
 };
 
 template <class K, class V, class Hash>
-const int ConcurrentHashMap<K, V, Hash>::kDefaultConcurrencyLevel = 64; // Увеличено для уменьшения конкуренции
+const int ConcurrentHashMap<K, V, Hash>::kDefaultConcurrencyLevel = 64;
 
 template <class K, class V, class Hash>
 const int ConcurrentHashMap<K, V, Hash>::kUndefinedSize = -1;
