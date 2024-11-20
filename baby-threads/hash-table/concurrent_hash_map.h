@@ -1,0 +1,162 @@
+#pragma once
+
+#include <unordered_map>
+#include <mutex>
+#include <functional>
+#include <list>
+#include <stdexcept>
+
+template <class K, class V, class Hash = std::hash<K>>
+class ConcurrentHashMap {
+public:
+    ConcurrentHashMap(const Hash& hasher = Hash()) : ConcurrentHashMap(kUndefinedSize, hasher) {
+    }
+
+    explicit ConcurrentHashMap(int expected_size, const Hash& hasher = Hash())
+        : ConcurrentHashMap(expected_size, kDefaultConcurrencyLevel, hasher) {
+    }
+
+    ConcurrentHashMap(int expected_size, int expected_threads_count, const Hash& hasher = Hash()) : hasher_(hasher), size_(0) {
+        if (expected_size != kUndefinedSize) {
+            N = 2 * expected_size;
+        } else {
+            N = expected_threads_count * 100;
+        }
+        LockSize = N;
+        locks_ = std::vector<std::mutex>(LockSize);
+        table_ = std::vector<std::list<Pair>>(N);
+    }
+
+    void ReHash() {
+        std::vector<std::unique_lock<std::mutex>> lock_guards;
+        lock_guards.reserve(locks_.size());
+        for (auto& lock : locks_) {
+            lock_guards.emplace_back(lock);
+        }
+        N *= 2;
+        table_.resize(N);
+        for (int i = 0; i < N / 2; ++i) {
+            auto& l = table_[i];
+            for (auto it = l.begin(); it != l.end();) {
+                size_t h = hasher_(it->key) % N;
+                if (i != h) {
+                    table_[h].push_back(*it);
+                    it = l.erase(it);
+                } else {
+                    ++it;
+                }
+            }
+        }
+        for (int i = locks_.size() - 1; i >= 0; --i) {
+            locks_[i].unlock();
+        }
+    }
+
+    bool Insert(const K& key, const V& value) {
+        if (Size() > table_.size()) {
+            std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
+            if (Size() > table_.size()) {
+                ReHash();
+            }
+        }
+
+        size_t idx_lock = hasher_(key) % LockSize;
+        size_t h = hasher_(key) % N;
+        std::lock_guard<std::mutex> lock(locks_[idx_lock]);
+        auto& l = table_[h];
+        for (auto it = l.begin(); it != l.end(); ++it) {
+            auto& pair = *it;
+            if (pair.key == key) {
+                return false;
+            }
+        }
+        l.emplace_back(key, value);
+        ++size_;
+        return true;
+    }
+
+    bool Erase(const K& key) {
+        size_t idx_lock = hasher_(key) % LockSize;
+        size_t h = hasher_(key) % N;
+        locks_[idx_lock].lock();
+        auto& l = table_[h];
+        auto it = std::find_if(l.begin(), l.end(), [&](const Pair& p) { return p.key == key; });
+        if (it != l.end()) {
+            l.erase(it);
+            --size_;
+            locks_[idx_lock].unlock();
+            return true;
+        }
+        locks_[idx_lock].unlock();
+        return false;
+    }
+
+    void Clear() {
+        for (auto& lock : locks_) {
+            lock.lock();
+        }
+        table_.clear();
+        size_ = 0;
+        for (auto it = locks_.rbegin(); it != locks_.rend(); ++it) {
+            it->unlock();
+        }
+    }
+
+    std::pair<bool, V> Find(const K& key) const {
+        size_t idx_lock = hasher_(key) % LockSize;
+        std::lock_guard<std::mutex> lock(locks_[idx_lock]);
+
+        size_t h = hasher_(key) % N;
+        const auto& l = table_[h];
+        for (const auto& pair : l) {
+            if (pair.key == key) {
+                return std::make_pair(true, pair.value);
+            }
+        }
+        return std::make_pair(false, V());
+    }
+
+    const V At(const K& key) const {
+        size_t h = hasher_(key) % N;
+        size_t idx_lock = hasher_(key) % LockSize;
+        locks_[idx_lock].lock();
+        const auto& l = table_[h];
+        for (const auto& pair : l) {
+            if (pair.key == key) {
+                locks_[idx_lock].unlock();
+                return pair.value;
+            }
+        }
+        locks_[idx_lock].unlock();
+        throw std::out_of_range("No such key");
+    }
+
+
+    size_t Size() const {
+        return size_;
+    }
+
+    static const int kDefaultConcurrencyLevel;
+    static const int kUndefinedSize;
+
+private:
+    struct Pair {
+        K key;
+        V value;
+    };
+
+    std::vector<std::list<Pair>> table_;
+    mutable std::vector<std::mutex> locks_;
+    std::mutex rehash_mutex_;
+    size_t LockSize;
+    size_t N;
+    std::atomic<size_t> size_;
+    Hash hasher_;
+};
+
+
+template <class K, class V, class Hash>
+const int ConcurrentHashMap<K, V, Hash>::kDefaultConcurrencyLevel = 8;
+
+template <class K, class V, class Hash>
+const int ConcurrentHashMap<K, V, Hash>::kUndefinedSize = -1;
