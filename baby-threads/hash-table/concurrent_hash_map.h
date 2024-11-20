@@ -26,7 +26,7 @@ public:
             bucket_size_ = expected_threads_count * 100;
         }
         lock_size_ = kDefaultConcurrencyLevel * 4;
-        locks_ = std::vector<std::mutex>(lock_size_);
+        locks_ = static_cast<std::vector<std::mutex>>(lock_size_);
         table_ = std::vector<std::list<Pair>>(bucket_size_);
     }
 
