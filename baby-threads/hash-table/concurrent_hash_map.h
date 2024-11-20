@@ -37,7 +37,7 @@ public:
         }
         bucket_size_ *= 2;
         table_.resize(bucket_size_);
-        for (int i = 0; i < bucket_size_ / 2; ++i) {
+        for (int i = 0; i < static_cast<int>(bucket_size_) / 2; ++i) {
             auto& l = table_[i];
             for (auto it = l.begin(); it != l.end();) {
                 int h = hasher_(it->key) % bucket_size_;
