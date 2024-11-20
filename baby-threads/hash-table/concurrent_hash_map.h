@@ -25,7 +25,7 @@ public:
         } else {
             bucket_size_ = expected_threads_count * 100;
         }
-        lock_size_ = kDefaultConcurrencyLevel * 4; // Keep lock_size_ fixed
+        lock_size_ = kDefaultConcurrencyLevel * 4;
         locks_ = std::vector<std::mutex>(lock_size_);
         table_ = std::vector<std::list<Pair>>(bucket_size_);
     }
@@ -45,7 +45,6 @@ public:
             }
         }
         table_.swap(new_table);
-        // Locks will be automatically released when lock_guards go out of scope
     }
 
     bool Insert(const K& key, const V& value) {
@@ -91,7 +90,7 @@ public:
             lock.lock();
         }
         table_.clear();
-        table_.resize(bucket_size_); // Ensure table_ has the correct size
+        table_.resize(bucket_size_);
         size_ = 0;
         for (auto it = locks_.rbegin(); it != locks_.rend(); ++it) {
             it->unlock();
