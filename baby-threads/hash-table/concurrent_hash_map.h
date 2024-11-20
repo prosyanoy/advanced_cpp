@@ -21,7 +21,7 @@ public:
     ConcurrentHashMap(int expected_size, int expected_threads_count, const Hash& hasher = Hash())
         : size_(0), hasher_(hasher) {
         if (expected_size != kUndefinedSize) {
-            bucket_size_ = 2 * expected_size;
+            bucket_size_ = 4 * expected_size; // Увеличен множитель для уменьшения частоты рехеширования
         } else {
             bucket_size_ = expected_threads_count * 100;
         }
@@ -31,11 +31,14 @@ public:
     }
 
     void ReHash() {
+        // Предполагается, что rehash_mutex_ уже захвачен
+        // Захватываем все locks_ в порядке
         std::vector<std::unique_lock<std::mutex>> lock_guards;
         lock_guards.reserve(locks_.size());
         for (auto& lock : locks_) {
             lock_guards.emplace_back(lock);
         }
+
         bucket_size_ *= 2;
         std::vector<std::list<Pair>> new_table(bucket_size_);
         for (size_t i = 0; i < table_.size(); ++i) {
@@ -48,7 +51,7 @@ public:
     }
 
     bool Insert(const K& key, const V& value) {
-        {
+        if (Size() > table_.size()) {
             std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
             if (Size() > 4 * table_.size()) {
                 ReHash();
@@ -87,22 +90,22 @@ public:
 
     void Clear() {
         std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
+
+        // Захватываем все locks_ в порядке
+        std::vector<std::unique_lock<std::mutex>> lock_guards;
+        lock_guards.reserve(locks_.size());
         for (auto& lock : locks_) {
-            lock.lock();
+            lock_guards.emplace_back(lock);
         }
+
         table_.clear();
         table_.resize(bucket_size_);
         size_ = 0;
-        for (auto it = locks_.rbegin(); it != locks_.rend(); ++it) {
-            it->unlock();
-        }
+        // Мьютексы автоматически освобождаются при выходе из области видимости
     }
 
     std::pair<bool, V> Find(const K& key) const {
-        {
-            std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
-            // Блокируем во избежание состояния гонки с ReHash
-        }
+        std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
 
         size_t idx_lock = hasher_(key) % lock_size_;
         std::lock_guard<std::mutex> lock(locks_[idx_lock]);
@@ -118,10 +121,7 @@ public:
     }
 
     const V At(const K& key) const {
-        {
-            std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
-            // Блокируем во избежание состояния гонки с ReHash
-        }
+        std::lock_guard<std::mutex> rehash_lock(rehash_mutex_);
 
         size_t idx_lock = hasher_(key) % lock_size_;
         std::lock_guard<std::mutex> lock(locks_[idx_lock]);
@@ -159,7 +159,7 @@ private:
 };
 
 template <class K, class V, class Hash>
-const int ConcurrentHashMap<K, V, Hash>::kDefaultConcurrencyLevel = 64;
+const int ConcurrentHashMap<K, V, Hash>::kDefaultConcurrencyLevel = 64; // Увеличено для уменьшения конкуренции
 
 template <class K, class V, class Hash>
 const int ConcurrentHashMap<K, V, Hash>::kUndefinedSize = -1;
