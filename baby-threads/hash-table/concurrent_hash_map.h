@@ -6,6 +6,7 @@
 #include <list>
 #include <stdexcept>
 #include <atomic>
+#include <vector>
 
 template <class K, class V, class Hash = std::hash<K>>
 class ConcurrentHashMap {
@@ -24,8 +25,8 @@ public:
         } else {
             bucket_size_ = expected_threads_count * 100;
         }
-        lock_size_ = bucket_size_;
-        locks_ = static_cast<std::vector<std::mutex>>(lock_size_);
+        lock_size_ = kDefaultConcurrencyLevel * 4; // Keep lock_size_ fixed
+        locks_ = std::vector<std::mutex>(lock_size_);
         table_ = std::vector<std::list<Pair>>(bucket_size_);
     }
 
@@ -36,22 +37,15 @@ public:
             lock_guards.emplace_back(lock);
         }
         bucket_size_ *= 2;
-        table_.resize(bucket_size_);
-        for (int i = 0; i < static_cast<int>(bucket_size_) / 2; ++i) {
-            auto& l = table_[i];
-            for (auto it = l.begin(); it != l.end();) {
-                int h = hasher_(it->key) % bucket_size_;
-                if (i != h) {
-                    table_[h].push_back(*it);
-                    it = l.erase(it);
-                } else {
-                    ++it;
-                }
+        std::vector<std::list<Pair>> new_table(bucket_size_);
+        for (size_t i = 0; i < table_.size(); ++i) {
+            for (const auto& pair : table_[i]) {
+                size_t h = hasher_(pair.key) % bucket_size_;
+                new_table[h].push_back(pair);
             }
         }
-        for (int i = locks_.size() - 1; i >= 0; --i) {
-            locks_[i].unlock();
-        }
+        table_.swap(new_table);
+        // Locks will be automatically released when lock_guards go out of scope
     }
 
     bool Insert(const K& key, const V& value) {
@@ -63,33 +57,32 @@ public:
         }
 
         size_t idx_lock = hasher_(key) % lock_size_;
-        size_t h = hasher_(key) % bucket_size_;
         std::lock_guard<std::mutex> lock(locks_[idx_lock]);
+
+        size_t h = hasher_(key) % bucket_size_;
         auto& l = table_[h];
-        for (auto it = l.begin(); it != l.end(); ++it) {
-            auto& pair = *it;
+        for (const auto& pair : l) {
             if (pair.key == key) {
                 return false;
             }
         }
         l.emplace_back(key, value);
-        ++size_;
+        size_.fetch_add(1, std::memory_order_relaxed);
         return true;
     }
 
     bool Erase(const K& key) {
         size_t idx_lock = hasher_(key) % lock_size_;
+        std::lock_guard<std::mutex> lock(locks_[idx_lock]);
+
         size_t h = hasher_(key) % bucket_size_;
-        locks_[idx_lock].lock();
         auto& l = table_[h];
         auto it = std::find_if(l.begin(), l.end(), [&](const Pair& p) { return p.key == key; });
         if (it != l.end()) {
             l.erase(it);
-            --size_;
-            locks_[idx_lock].unlock();
+            size_.fetch_sub(1, std::memory_order_relaxed);
             return true;
         }
-        locks_[idx_lock].unlock();
         return false;
     }
 
@@ -98,6 +91,7 @@ public:
             lock.lock();
         }
         table_.clear();
+        table_.resize(bucket_size_); // Ensure table_ has the correct size
         size_ = 0;
         for (auto it = locks_.rbegin(); it != locks_.rend(); ++it) {
             it->unlock();
@@ -119,22 +113,21 @@ public:
     }
 
     const V At(const K& key) const {
-        size_t h = hasher_(key) % bucket_size_;
         size_t idx_lock = hasher_(key) % lock_size_;
-        locks_[idx_lock].lock();
+        std::lock_guard<std::mutex> lock(locks_[idx_lock]);
+
+        size_t h = hasher_(key) % bucket_size_;
         const auto& l = table_[h];
         for (const auto& pair : l) {
             if (pair.key == key) {
-                locks_[idx_lock].unlock();
                 return pair.value;
             }
         }
-        locks_[idx_lock].unlock();
         throw std::out_of_range("No such key");
     }
 
     size_t Size() const {
-        return size_;
+        return size_.load(std::memory_order_relaxed);
     }
 
     static const int kDefaultConcurrencyLevel;
@@ -148,7 +141,7 @@ private:
 
     std::vector<std::list<Pair>> table_;
     mutable std::vector<std::mutex> locks_;
-    std::mutex rehash_mutex_;
+    mutable std::mutex rehash_mutex_;
     size_t lock_size_;
     size_t bucket_size_;
     std::atomic<size_t> size_;
