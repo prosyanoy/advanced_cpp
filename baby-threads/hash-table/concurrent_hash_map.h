@@ -5,6 +5,7 @@
 #include <functional>
 #include <list>
 #include <stdexcept>
+#include <atomic>
 
 template <class K, class V, class Hash = std::hash<K>>
 class ConcurrentHashMap {
@@ -16,7 +17,7 @@ public:
         : ConcurrentHashMap(expected_size, kDefaultConcurrencyLevel, hasher) {
     }
 
-    ConcurrentHashMap(int expected_size, int expected_threads_count, const Hash& hasher = Hash()) : hasher_(hasher), size_(0) {
+    ConcurrentHashMap(int expected_size, int expected_threads_count, const Hash& hasher = Hash()) : size_(0), hasher_(hasher){
         if (expected_size != kUndefinedSize) {
             N = 2 * expected_size;
         } else {
@@ -38,7 +39,7 @@ public:
         for (int i = 0; i < N / 2; ++i) {
             auto& l = table_[i];
             for (auto it = l.begin(); it != l.end();) {
-                size_t h = hasher_(it->key) % N;
+                int h = hasher_(it->key) % N;
                 if (i != h) {
                     table_[h].push_back(*it);
                     it = l.erase(it);
