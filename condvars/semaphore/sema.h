@@ -16,15 +16,11 @@ public:
     }
 
     void Leave() {
-        bool was_empty = false;
         {
             std::lock_guard guard{mutex_};
             ++count_;
-            was_empty = (count_ == 1);
         }
-        if (was_empty) {
-            cv_.notify_one();
-        }
+        cv_.notify_all();
     }
 
     template <class Func>
