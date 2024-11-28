@@ -24,9 +24,7 @@ public:
     template <class Func>
     void Write(Func func) {
         std::unique_lock<std::mutex> lock(global_);
-        cv_.wait(lock, [this] {
-            return !blocked_readers_;
-        });
+        cv_.wait(lock, [this] { return !blocked_readers_; });
         func();
     }
 
