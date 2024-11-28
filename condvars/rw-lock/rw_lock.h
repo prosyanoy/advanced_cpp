@@ -1,4 +1,3 @@
-#pragma once
 #include <mutex>
 #include <condition_variable>
 
@@ -6,41 +5,47 @@ class RWLock {
 public:
     template <class Func>
     void Read(Func func) {
-        read_.lock();
-        ++blocked_readers_;
-        if (blocked_readers_ == 1) {
-            global_.lock();
+        std::unique_lock<std::mutex> lock(mutex_);
+        cv_readers_.wait(lock, [this]() { return !writer_active_ && writer_waiting_ == 0; });
+        ++reader_count_;
+        lock.unlock();
+
+        func();
+
+        lock.lock();
+        --reader_count_;
+        if (reader_count_ == 0 && writer_waiting_ > 0) {
+            cv_writers_.notify_one();
         }
-        read_.unlock();
-        try {
-            func();
-        } catch (...) {
-            EndRead();
-            throw;
-        }
-        EndRead();
+        lock.unlock();
     }
 
     template <class Func>
     void Write(Func func) {
-        std::unique_lock<std::mutex> lock(global_);
-        cv_.wait(lock, [this] { return !blocked_readers_; });
+        std::unique_lock<std::mutex> lock(mutex_);
+        ++writer_waiting_;
+        cv_writers_.wait(lock, [this]() { return !writer_active_ && reader_count_ == 0; });
+        --writer_waiting_;
+        writer_active_ = true;
+        lock.unlock();
+
         func();
+
+        lock.lock();
+        writer_active_ = false;
+        if (writer_waiting_ > 0) {
+            cv_writers_.notify_one();
+        } else {
+            cv_readers_.notify_all();
+        }
+        lock.unlock();
     }
 
 private:
-    std::mutex read_;
-    std::mutex global_;
-    int blocked_readers_ = 0;
-    std::condition_variable cv_;
-
-    void EndRead() {
-        read_.lock();
-        --blocked_readers_;
-        if (!blocked_readers_) {
-            cv_.notify_one();
-            global_.unlock();
-        }
-        read_.unlock();
-    }
+    std::mutex mutex_;
+    std::condition_variable cv_readers_;
+    std::condition_variable cv_writers_;
+    int reader_count_ = 0;
+    int writer_waiting_ = 0;
+    bool writer_active_ = false;
 };
