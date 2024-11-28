@@ -6,7 +6,7 @@ public:
     template <class Func>
     void Read(Func func) {
         std::unique_lock<std::mutex> lock(mutex_);
-        cv_readers_.wait(lock, [this]() { return !writer_active_ && writer_waiting_ == 0; });
+        cv_readers_.wait(lock, [this]() { return !writer_active_; });
         ++reader_count_;
         lock.unlock();
 
