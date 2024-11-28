@@ -30,15 +30,10 @@ public:
     template <class Func>
     void Enter(Func callback) {
         int order = counter1_++;
-        while (true) {
-            std::unique_lock<std::mutex> guard(mutex_);
-            cv_.wait(guard, [this] { return count_ > 0; });
-            if (counter2_ == order) {
-                callback(count_);
-                ++counter2_;
-                return;
-            }
-        }
+        std::unique_lock<std::mutex> guard(mutex_);
+        cv_.wait(guard, [this, order] { return count_ > 0 && counter2_ == order; });
+        callback(count_);
+        ++counter2_;
     }
 
     void Enter() {
